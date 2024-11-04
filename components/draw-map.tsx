@@ -18,9 +18,9 @@ export default function DrawMap({ onBoundariesChange, onCenterChange }: DrawMapP
   useEffect(() => {
     delete (Icon.Default.prototype as any)._getIconUrl;
     Icon.Default.mergeOptions({
-      iconUrl: "/marker-icon.png",
-      iconRetinaUrl: "/marker-icon-2x.png",
-      shadowUrl: "/marker-shadow.png",
+      iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+      iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
     });
   }, []);
 
