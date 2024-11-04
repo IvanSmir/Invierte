@@ -15,6 +15,10 @@ import {
   legalInfoSchema,
   locationInfoSchema,
   lotsInfoSchema,
+  type BasicInfoValues,
+  type LegalInfoValues,
+  type LocationInfoValues,
+  type LotsInfoValues,
 } from "@/lib/validations/property";
 
 const steps = [
@@ -25,14 +29,21 @@ const steps = [
   { title: "Resumen", description: "Revisar y guardar" },
 ];
 
+interface FormData {
+  basicInfo: BasicInfoValues;
+  legalInfo: LegalInfoValues;
+  locationInfo: LocationInfoValues;
+  lotsInfo: LotsInfoValues;
+}
+
 export function PropertyStepper() {
   const [currentStep, setCurrentStep] = useState(0);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     basicInfo: {
       name: "",
       description: "",
-      images: [] as string[],
+      images: [],
       departmentId: "",
       cityId: "",
       neighborhoodId: "",
@@ -41,10 +52,10 @@ export function PropertyStepper() {
     legalInfo: {
       propertyNumber: "",
       registryInfo: "",
-      documents: [] as string[],
+      documents: [],
     },
     locationInfo: {
-      coordinates: [] as [number, number][],
+      coordinates: [],
       manualCoordinates: "",
     },
     lotsInfo: {
@@ -55,12 +66,11 @@ export function PropertyStepper() {
 
   const { toast } = useToast();
 
-  const updateFormData = (step: string, data: any) => {
+  const updateFormData = (step: keyof FormData, data: Partial<FormData[keyof FormData]>) => {
     setFormData(prev => ({
       ...prev,
       [step]: { ...prev[step], ...data },
     }));
-    // Limpiar errores cuando se actualiza el formulario
     setErrors({});
   };
 
@@ -99,7 +109,7 @@ export function PropertyStepper() {
 
       setErrors({});
       return true;
-    } catch (error: any) {
+    } catch (error) {
       console.error("Validation error:", error);
       return false;
     }
@@ -126,7 +136,7 @@ export function PropertyStepper() {
 
   const handleSubmit = async () => {
     const allStepsValid = [0, 1, 2, 3].every(step => validateStep(step));
-    
+
     if (!allStepsValid) {
       toast({
         title: "Error",
@@ -199,10 +209,10 @@ export function PropertyStepper() {
         currentStep={currentStep}
         onStepClick={handleStepClick}
       />
-      
+
       <Card className="p-6">
         {renderStep()}
-        
+
         <div className="flex justify-between mt-8">
           <Button
             variant="outline"
@@ -211,7 +221,7 @@ export function PropertyStepper() {
           >
             Anterior
           </Button>
-          
+
           {currentStep === steps.length - 1 ? (
             <Button onClick={handleSubmit}>
               Guardar Terreno

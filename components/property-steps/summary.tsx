@@ -3,28 +3,33 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 
-interface SummaryProps {
-  data: {
-    basicInfo: {
-      name: string;
-      description: string;
-      images: string[];
-    };
-    legalInfo: {
-      propertyNumber: string;
-      registryInfo: string;
-      documents: string[];
-    };
-    locationInfo: {
-      coordinates: [number, number][];
-      manualCoordinates: string;
-      address: string;
-    };
-    lotsInfo: {
-      totalLots: number;
-      pricePerLot: number;
-    };
+interface SummaryData {
+  basicInfo: {
+    name: string;
+    description: string;
+    images: string[];
+    departmentId: string;
+    cityId: string;
+    neighborhoodId?: string;
+    address: string;
   };
+  legalInfo: {
+    propertyNumber: string;
+    registryInfo: string;
+    documents: string[];
+  };
+  locationInfo: {
+    coordinates: [number, number][];
+    manualCoordinates: string;
+  };
+  lotsInfo: {
+    totalLots: number;
+    pricePerLot: number;
+  };
+}
+
+interface SummaryProps {
+  data: SummaryData;
 }
 
 export function Summary({ data }: SummaryProps) {
@@ -38,10 +43,13 @@ export function Summary({ data }: SummaryProps) {
           <dl className="space-y-2">
             <dt className="font-medium">Nombre</dt>
             <dd className="text-muted-foreground">{data.basicInfo.name}</dd>
-            
+
             <dt className="font-medium mt-4">Descripción</dt>
             <dd className="text-muted-foreground">{data.basicInfo.description}</dd>
-            
+
+            <dt className="font-medium mt-4">Dirección</dt>
+            <dd className="text-muted-foreground">{data.basicInfo.address}</dd>
+
             <dt className="font-medium mt-4">Imágenes</dt>
             <dd className="grid grid-cols-3 gap-4 mt-2">
               {data.basicInfo.images.map((url, index) => (
@@ -67,10 +75,10 @@ export function Summary({ data }: SummaryProps) {
           <dl className="space-y-2">
             <dt className="font-medium">Número de Propiedad</dt>
             <dd className="text-muted-foreground">{data.legalInfo.propertyNumber}</dd>
-            
+
             <dt className="font-medium mt-4">Información de Registro</dt>
             <dd className="text-muted-foreground">{data.legalInfo.registryInfo}</dd>
-            
+
             <dt className="font-medium mt-4">Documentos</dt>
             <dd className="text-muted-foreground">
               {data.legalInfo.documents.length} documentos adjuntos
@@ -85,10 +93,7 @@ export function Summary({ data }: SummaryProps) {
         </CardHeader>
         <CardContent>
           <dl className="space-y-2">
-            <dt className="font-medium">Dirección</dt>
-            <dd className="text-muted-foreground">{data.locationInfo.address}</dd>
-            
-            <dt className="font-medium mt-4">Coordenadas</dt>
+            <dt className="font-medium">Coordenadas</dt>
             <dd className="text-muted-foreground">
               {data.locationInfo.coordinates.length} puntos marcados
             </dd>
@@ -104,12 +109,12 @@ export function Summary({ data }: SummaryProps) {
           <dl className="space-y-2">
             <dt className="font-medium">Cantidad de Lotes</dt>
             <dd className="text-muted-foreground">{data.lotsInfo.totalLots}</dd>
-            
+
             <dt className="font-medium mt-4">Precio por Lote</dt>
             <dd className="text-muted-foreground">
               ${data.lotsInfo.pricePerLot.toLocaleString()}
             </dd>
-            
+
             <dt className="font-medium mt-4">Valor Total</dt>
             <dd className="text-muted-foreground">
               ${(data.lotsInfo.totalLots * data.lotsInfo.pricePerLot).toLocaleString()}
