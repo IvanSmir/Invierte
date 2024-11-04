@@ -38,23 +38,35 @@ export function PurchaseDialog({ property, lot, open, onOpenChange }: PurchaseDi
 
   const form = useForm<PurchaseValues>({
     resolver: zodResolver(purchaseSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+    },
   });
 
   const onSubmit = async (data: PurchaseValues) => {
     setIsSubmitting(true);
-    // Aquí iría la lógica de compra real
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsSubmitting(false);
-    onOpenChange(false);
+    try {
+      // Aquí iría la lógica de reserva real
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Error al procesar la reserva:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  if (!lot) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>Comprar Lote {lot.number}</DialogTitle>
+          <DialogTitle>Reservar Lote {lot.number}</DialogTitle>
           <DialogDescription>
-            Complete sus datos para iniciar el proceso de compra del lote por{" "}
+            Complete sus datos para iniciar el proceso de reserva del lote por{" "}
             {formatCurrency(lot.price)}
           </DialogDescription>
         </DialogHeader>
@@ -109,7 +121,7 @@ export function PurchaseDialog({ property, lot, open, onOpenChange }: PurchaseDi
               Cancelar
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Procesando..." : "Confirmar Compra"}
+              {isSubmitting ? "Procesando..." : "Confirmar Reserva"}
             </Button>
           </DialogFooter>
         </form>

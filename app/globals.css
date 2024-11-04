@@ -80,3 +80,38 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Ajustes para el mapa de Leaflet */
+.leaflet-container {
+  z-index: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.leaflet-pane {
+  z-index: 1;
+}
+
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 1;
+}
+
+.leaflet-popup {
+  z-index: 2;
+}
+
+.leaflet-popup-content-wrapper {
+  z-index: 2;
+}
+
+.leaflet-popup-tip-container {
+  z-index: 2;
+}
+
+/* Asegurarse de que los diálogos y dropdowns estén por encima del mapa */
+[data-radix-popper-content-wrapper],
+.dialog-overlay,
+[role="dialog"] {
+  z-index: 50 !important;
+}
