@@ -17,6 +17,13 @@ export interface Property {
   location: string;
   latitude: number;
   longitude: number;
+  propertyNumber: string;
+  registryInfo: string;
+  departmentId: string;
+  cityId: string;
+  neighborhoodId?: string;
+  address: string;
   images: string[];
+  documents: string[];
   lots: Lot[];
 }
