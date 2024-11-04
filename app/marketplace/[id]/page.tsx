@@ -1,6 +1,10 @@
-import { Property } from "@/lib/types";
 import { properties } from "@/lib/data";
-import { PropertyDetail } from "@/components/property-detail";
+import { PropertyDetailClient } from "@/components/property-detail/property-detail-client";
+import { notFound } from "next/navigation";
+
+interface PropertyPageProps {
+  params: { id: string };
+}
 
 export function generateStaticParams() {
   return properties.map((property) => ({
@@ -8,16 +12,12 @@ export function generateStaticParams() {
   }));
 }
 
-export default function PropertyPage({ params }: { params: { id: string } }) {
+export default function PropertyPage({ params }: PropertyPageProps) {
   const property = properties.find((p) => p.id.toString() === params.id);
 
   if (!property) {
-    return <div className="container max-w-6xl mx-auto px-4 py-8 text-center">Propiedad no encontrada</div>;
+    notFound();
   }
 
-  return (
-    <div className="container max-w-6xl mx-auto px-4">
-      <PropertyDetail property={property} />
-    </div>
-  );
+  return <PropertyDetailClient property={property} />;
 }
