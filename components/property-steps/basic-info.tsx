@@ -39,6 +39,10 @@ interface BasicInfoData {
   description: string;
   images: string[];
   departmentId: string;
+  departmentLocation: {
+    lat: number;
+    long: number;
+  };
   cityId: string;
   neighborhoodId?: string;
   address: string;
@@ -161,10 +165,16 @@ export function BasicInfo({ data, onUpdate, errors = {} }: BasicInfoProps) {
           <Select
             value={data.departmentId}
             onValueChange={(value) => {
-              onUpdate({ 
+              const selectedDept = departments.find(
+                (dept) => dept.id.toString() === value
+              );
+              onUpdate({
                 departmentId: value,
-                cityId: '',
-                neighborhoodId: ''
+                cityId: "",
+                neighborhoodId: "",
+                departmentLocation: selectedDept
+                  ? { lat: selectedDept.gps.lat as number, long: selectedDept.gps.long as number }
+                  : { lat: 0, long: 0 },
               });
             }}
           >
@@ -191,7 +201,7 @@ export function BasicInfo({ data, onUpdate, errors = {} }: BasicInfoProps) {
           <Select
             value={data.cityId}
             onValueChange={(value) => {
-              onUpdate({ 
+              onUpdate({
                 cityId: value,
                 neighborhoodId: ''
               });

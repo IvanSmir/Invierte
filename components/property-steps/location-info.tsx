@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { CoordinatesList } from "@/components/coordinates-list";
 import dynamic from "next/dynamic";
 
@@ -21,11 +22,15 @@ interface LocationInfoProps {
     coordinates: [number, number][];
     manualCoordinates: string;
   };
+  location: {
+    lat: number;
+    long: number;
+  };
   onUpdate: (data: any) => void;
   errors?: Record<string, string[]>;
 }
 
-export function LocationInfo({ data, onUpdate, errors = {} }: LocationInfoProps) {
+export function LocationInfo({ location, data, onUpdate, errors = {} }: LocationInfoProps) {
   const [coordinates, setCoordinates] = useState<[number, number][]>(data.coordinates);
   const [manualInput, setManualInput] = useState(data.manualCoordinates);
 
@@ -40,26 +45,37 @@ export function LocationInfo({ data, onUpdate, errors = {} }: LocationInfoProps)
 
   const handleManualAdd = () => {
     try {
+      // Dividir por líneas y limpiar espacios
       const coordPairs = manualInput
         .split('\n')
         .map(pair => pair.trim())
         .filter(pair => pair)
         .map(pair => {
-          const [lat, lng] = pair.split(',').map(num => parseFloat(num.trim()));
-          if (isNaN(lat) || isNaN(lng)) throw new Error();
+          // Separar latitud y longitud
+          const [lat, lng] = pair.split(',').map(num => {
+            const parsed = parseFloat(num.trim());
+            if (isNaN(parsed)) throw new Error('Formato inválido');
+            return parsed;
+          });
+
+          // Validar rangos
+          if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+            throw new Error('Coordenadas fuera de rango');
+          }
+
           return [lat, lng] as [number, number];
         });
 
       if (coordinates.length + coordPairs.length > 20) {
-        return; // Excedería el máximo de puntos
+        throw new Error('Excedería el límite de 20 puntos');
       }
 
       const newCoordinates = [...coordinates, ...coordPairs];
       setCoordinates(newCoordinates);
       onUpdate({ coordinates: newCoordinates });
-      setManualInput('');
+      setManualInput(''); // Limpiar el input después de agregar
     } catch (error) {
-      console.error('Invalid coordinate format');
+      console.error('Error al procesar coordenadas:', error);
     }
   };
 
@@ -80,19 +96,25 @@ export function LocationInfo({ data, onUpdate, errors = {} }: LocationInfoProps)
           <div>
             <Label>Coordenadas Manuales</Label>
             <Textarea
-              placeholder="Ingrese las coordenadas (una por línea) en formato: latitud, longitud"
+              placeholder="Ingrese las coordenadas (una por línea) en formato: latitud, longitud Ejemplo: -25.2867, -57.3333"
               value={manualInput}
               onChange={(e) => setManualInput(e.target.value)}
-              className={`h-[100px] mb-2 ${errors.coordinates ? "border-destructive" : ""}`}
+              className={`h-[100px] mb-2 font-mono ${errors.coordinates ? "border-destructive" : ""}`}
             />
+            <Button
+              onClick={handleManualAdd}
+              className="w-full"
+              type="button"
+            >
+              Agregar Coordenadas
+            </Button>
             {errors.coordinates?.map((error, index) => (
               <p key={index} className="text-sm text-destructive mt-1">
                 {error}
               </p>
             ))}
-            <p className="text-xs text-muted-foreground">
-              {coordinates.length}/20 puntos marcados. Mínimo 3 puntos para formar un polígono.
-              Asegurate de que tu terreno este correctamente marcado en el mapa.
+            <p className="text-xs text-muted-foreground mt-2">
+              {coordinates.length}/20 puntos marcados. Mínimo 3 puntos para formar un polígono.<br />
             </p>
           </div>
 
@@ -107,9 +129,13 @@ export function LocationInfo({ data, onUpdate, errors = {} }: LocationInfoProps)
 
         <Card className="p-4">
           <Label>Seleccionar en el Mapa</Label>
+          <p className="text-xs text-muted-foreground mt-2">
+            Asegurate de que tu terreno este correctamente marcado en el mapa.<br />
+            Tambien puedes usar el mapa para agregar coordenadas.
+          </p>
           <div className="h-[400px] mt-2">
             <PropertyMap
-              center={[-25.2867, -57.3333]}
+              center={[location.lat, location.long]}
               zoom={13}
               onMapClick={handleMapClick}
               coordinates={coordinates}

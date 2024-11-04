@@ -45,6 +45,10 @@ export function PropertyStepper() {
       description: "",
       images: [],
       departmentId: "",
+      departmentLocation: {
+        lat: 0,
+        long: 0,
+      },
       cityId: "",
       neighborhoodId: "",
       address: "",
@@ -183,6 +187,7 @@ export function PropertyStepper() {
         return (
           <LocationInfo
             data={formData.locationInfo}
+            location={formData.basicInfo.departmentLocation}
             onUpdate={(data) => updateFormData("locationInfo", data)}
             errors={errors}
           />
