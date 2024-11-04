@@ -92,12 +92,13 @@ export function LocationInfo({ data, onUpdate, errors = {} }: LocationInfoProps)
             ))}
             <p className="text-xs text-muted-foreground">
               {coordinates.length}/20 puntos marcados. Mínimo 3 puntos para formar un polígono.
+              Asegurate de que tu terreno este correctamente marcado en el mapa.
             </p>
           </div>
-          
+
           <div>
             <Label>Lista de Coordenadas</Label>
-            <CoordinatesList 
+            <CoordinatesList
               coordinates={coordinates}
               onRemove={removeCoordinate}
             />

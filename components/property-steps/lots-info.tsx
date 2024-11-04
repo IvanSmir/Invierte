@@ -3,6 +3,8 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+//aqui se deberia mostrar el mapa con los lotes ya divididos
+
 interface LotsInfoData {
   totalLots: number;
   pricePerLot: number;
