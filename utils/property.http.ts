@@ -79,3 +79,24 @@ export const addProperty = async (property: any, token: string) => {
   }
 };
  
+export const updateProperty = async (id: string, updatedProperty: any, token: string) => {
+  try {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(updatedProperty),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al actualizar la Propiedad");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    throw new Error(error.message || "Error al actualizar la Propiedad");
+  }
+};
