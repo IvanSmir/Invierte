@@ -10,7 +10,7 @@ export const getProperty = async (ciRuc: string, token: string) => {
       neighborhoodId: '1',
     });
     
-    const response = await fetch(`${API_URL}/property?${queryParams.toString()}`, {
+    const response = await fetch(`${API_URL}?${queryParams.toString()}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -30,6 +30,32 @@ export const getProperty = async (ciRuc: string, token: string) => {
     throw new Error((error as Error).message || "Error al obtener Propiedad");
   }
 };
+
+export const getPropertyById = async (id: string, token: string) => {
+  try {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status == 404) {
+      throw new Error("Propiedad no encontrada");
+    }
+    if (!response.ok) {
+      throw new Error("Error al obtener Propiedad");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    throw new Error((error as Error).message || "Error al obtener Propiedad");
+  }
+};
+ 
+
 
 export const addProperty = async (property: any, token: string) => {
   try {
