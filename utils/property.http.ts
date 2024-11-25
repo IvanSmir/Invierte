@@ -1,6 +1,6 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL + "/property";
 
-export const getProperty = async (ciRuc: string, token: string) => {
+export const getProperty = async ( token: string) => {
   try {
     const queryParams = new URLSearchParams({
       page: '1', 

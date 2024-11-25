@@ -10,6 +10,7 @@ import { Lot, Property } from '@/lib/types';
 import { Position } from "geojson";
 import { Feature, FeatureCollection, Polygon, MultiPolygon , GeoJsonProperties } from 'geojson';
 
+
 interface PropertyMapProps {
   center: [number, number];
   zoom: number;
@@ -34,6 +35,7 @@ export function LotsInfo() {
 
 
   useEffect(() => {
+    
     if (!mapRef.current) return;
 
     const initialMap = L.map(mapRef.current, {
@@ -103,7 +105,7 @@ export function LotsInfo() {
     return () => {
       initialMap.remove();
     };
-  }, [orientationLine, originalPolygon]);
+  }, []);
 
 
   const calculateOrientation = (line: L.Polyline) => {
@@ -121,45 +123,61 @@ export function LotsInfo() {
     const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
     setRotationAngle(angle);
   };
-
   function divideTerrain(horizontalDivisions: number, verticalDivisions: number) {
     if (!originalPolygon || !orientationLine) {
       alert('Dibuje primero el polígono y la línea de orientación');
       return;
     }
-
+  
     clearDivisions();
-
+  
     const polygon = originalPolygon.toGeoJSON();
     const bbox = turf.bbox(polygon);
     const bboxPolygon = turf.bboxPolygon(bbox);
     const center = turf.center(bboxPolygon);
     const width = (bbox[2] - bbox[0]) / verticalDivisions;
     const height = (bbox[3] - bbox[1]) / horizontalDivisions;
-
+  
     for (let i = 0; i < horizontalDivisions; i++) {
       for (let j = 0; j < verticalDivisions; j++) {
         const minX = bbox[0] + width * j;
         const maxX = bbox[0] + width * (j + 1);
         const minY = bbox[1] + height * i;
         const maxY = bbox[1] + height * (i + 1);
-        type MyFeatureCollection = FeatureCollection<Polygon, GeoJsonProperties>;
+  
+        // Crear el bbox de la división
         const divisionBbox = turf.bboxPolygon([minX, minY, maxX, maxY]);
         const rotatedDivision = turf.transformRotate(divisionBbox, -rotationAngle, {
           pivot: center.geometry.coordinates,
         });
-        const polygonFeature = polygon as Feature<Polygon, GeoJsonProperties>;
-        const rotatedDivisionFeature: Feature<Polygon, GeoJsonProperties> = rotatedDivision as Feature<Polygon, GeoJsonProperties>;
-      // Create feature collections with the correct type
-      const polygonFC: MyFeatureCollection = turf.featureCollection([polygonFeature]);
+  
+        try {
+          // Validar geometrías
+          if (!polygon.geometry || !rotatedDivision.geometry) {
+            console.error("Geometría inválida detectada:", { polygon, rotatedDivision });
+            continue;
+          }
+          const polygonFeature: Feature<Polygon | MultiPolygon, any> = turf.feature(polygon.geometry, polygon.properties);
 
-      const intersection = turf.intersect(polygonFC, rotatedDivisionFeature);
-      if (intersection) {
-          createDivisionLayer(intersection, `${i + 1}-${j + 1}`);
+          // Convertir el `Feature` en un `FeatureCollection`
+          const polygonFC: FeatureCollection<Polygon | MultiPolygon, GeoJsonProperties> = turf.featureCollection([
+            polygonFeature,
+          ]);
+          // Asegurarse de tener Feature
+          const rotatedDivisionFeature = turf.feature(rotatedDivision.geometry, rotatedDivision.properties);
+  
+          // Calcular intersección
+          const intersection = turf.intersect(polygonFC, rotatedDivisionFeature);
+          if (intersection) {
+            createDivisionLayer(intersection, `${i + 1}-${j + 1}`);
+          }
+        } catch (error) {
+          console.error("Error al calcular la intersección:", error);
         }
       }
     }
-  };
+  }
+  
 
   const createDivisionLayer = (geometry: Feature<any, GeoJsonProperties> | FeatureCollection<any, GeoJsonProperties>,label: string) => {
     const area = turf.area(geometry);
