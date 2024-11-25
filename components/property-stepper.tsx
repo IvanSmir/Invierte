@@ -195,9 +195,7 @@ export function PropertyStepper() {
       case 3:
         return (
           <LotsInfo
-            data={formData.lotsInfo}
-            onUpdate={(data) => updateFormData("lotsInfo", data)}
-            errors={errors}
+           
           />
         );
       case 4:
