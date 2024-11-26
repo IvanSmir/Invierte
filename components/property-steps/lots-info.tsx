@@ -8,7 +8,7 @@ import 'leaflet-draw';  // Asegúrate de importar también la funcionalidad de l
 import * as turf from '@turf/turf';
 import { Lot, Property } from '@/lib/types';
 import { Position } from "geojson";
-import { Feature, FeatureCollection, Polygon, MultiPolygon , GeoJsonProperties } from 'geojson';
+import { Feature, FeatureCollection, Polygon, MultiPolygon, GeoJsonProperties } from 'geojson';
 
 
 interface PropertyMapProps {
@@ -35,7 +35,7 @@ export function LotsInfo() {
 
 
   useEffect(() => {
-    
+
     if (!mapRef.current) return;
 
     const initialMap = L.map(mapRef.current, {
@@ -107,92 +107,76 @@ export function LotsInfo() {
     };
   }, []);
 
-
   const calculateOrientation = (line: L.Polyline) => {
-    const coords = line.getLatLngs();
-    const flattenedCoords = coords.flat(); 
+    const coords = line.getLatLngs() as L.LatLng[];
+    const start = coords[0];
+    const end = coords[coords.length - 1];
 
- const start = flattenedCoords[0];
-  const end = flattenedCoords[flattenedCoords.length - 1];
-
-  if (!(start instanceof L.LatLng) || !(end instanceof L.LatLng)) {
-    console.error("Coordinates are not of type LatLng");
-    return;
-  }      const dx = end.lng - start.lng;
+    const dx = end.lng - start.lng;
     const dy = end.lat - start.lat;
     const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
     setRotationAngle(angle);
+
+    const angleInfo = document.getElementById('angleInfo');
+    if (angleInfo) {
+      angleInfo.textContent = `Ángulo de orientación: ${Math.round(angle)}°`;
+    }
   };
-  function divideTerrain(horizontalDivisions: number, verticalDivisions: number) {
+
+  const divideTerrain = (horizontalDivisions: number, verticalDivisions: number) => {
     if (!originalPolygon || !orientationLine) {
       alert('Dibuje primero el polígono y la línea de orientación');
       return;
     }
-  
+
     clearDivisions();
-  
+
     const polygon = originalPolygon.toGeoJSON();
     const bbox = turf.bbox(polygon);
     const bboxPolygon = turf.bboxPolygon(bbox);
     const center = turf.center(bboxPolygon);
+
     const width = (bbox[2] - bbox[0]) / verticalDivisions;
     const height = (bbox[3] - bbox[1]) / horizontalDivisions;
-  
+
     for (let i = 0; i < horizontalDivisions; i++) {
       for (let j = 0; j < verticalDivisions; j++) {
         const minX = bbox[0] + width * j;
         const maxX = bbox[0] + width * (j + 1);
         const minY = bbox[1] + height * i;
         const maxY = bbox[1] + height * (i + 1);
-  
-        // Crear el bbox de la división
+
         const divisionBbox = turf.bboxPolygon([minX, minY, maxX, maxY]);
         const rotatedDivision = turf.transformRotate(divisionBbox, -rotationAngle, {
-          pivot: center.geometry.coordinates,
+          pivot: center.geometry.coordinates
         });
-  
-        try {
-          // Validar geometrías
-          if (!polygon.geometry || !rotatedDivision.geometry) {
-            console.error("Geometría inválida detectada:", { polygon, rotatedDivision });
-            continue;
-          }
-          const polygonFeature: Feature<Polygon | MultiPolygon, any> = turf.feature(polygon.geometry, polygon.properties);
 
-          // Convertir el `Feature` en un `FeatureCollection`
-          const polygonFC: FeatureCollection<Polygon | MultiPolygon, GeoJsonProperties> = turf.featureCollection([
-            polygonFeature,
-          ]);
-          // Asegurarse de tener Feature
-          const rotatedDivisionFeature = turf.feature(rotatedDivision.geometry, rotatedDivision.properties);
-  
-          // Calcular intersección
-          const intersection = turf.intersect(polygonFC, rotatedDivisionFeature);
+        try {
+
+          const features = turf.featureCollection([polygon, rotatedDivision]);
+          const intersection = turf.intersect(features);
           if (intersection) {
             createDivisionLayer(intersection, `${i + 1}-${j + 1}`);
           }
         } catch (error) {
-          console.error("Error al calcular la intersección:", error);
+          console.error('Error al calcular intersección:', error);
         }
       }
     }
-  }
-  
+  };
 
-  const createDivisionLayer = (geometry: Feature<any, GeoJsonProperties> | FeatureCollection<any, GeoJsonProperties>,label: string) => {
+  const createDivisionLayer = (geometry: Feature<any, GeoJsonProperties>, label: string) => {
+    if (!map) return;
+
     const area = turf.area(geometry);
     const layer = L.geoJSON(geometry, {
       style: {
         color: getRandomColor(),
         weight: 2,
         opacity: 0.7,
-        fillOpacity: 0.3,
-      },
-    })
-    if (map) {
-      L.geoJSON(geometry).addTo(map);
-      // Other operations using map
-    }
+        fillOpacity: 0.3
+      }
+    }).addTo(map);
 
     const center = turf.center(geometry);
     L.marker([center.geometry.coordinates[1], center.geometry.coordinates[0]], {
@@ -200,36 +184,29 @@ export function LotsInfo() {
         className: 'area-label',
         html: `<div style="transform: rotate(${rotationAngle}deg)">
           Parcela ${label}<br>${Math.round(area)} m²
-        </div>`,
-      }),
-    })
-    if (map) {
-      L.geoJSON(geometry).addTo(map);
-      // Other operations using map
-    }
+        </div>`
+      })
+    }).addTo(map);
 
-    setDivisions((prevDivisions) => [...prevDivisions, layer]);
+    setDivisions(prev => [...prev, layer]);
   };
 
   const clearDivisions = () => {
-    if (map) {
-      divisions.forEach((layer) => map.removeLayer(layer));
-      setDivisions([]);
-    }
+    divisions.forEach(layer => layer.remove());
+    setDivisions([]);
   };
 
   const clearMap = () => {
-    if (map) {
-      if (originalPolygon) {
-        map.removeLayer(originalPolygon);
-      }
-      if (orientationLine) {
-        map.removeLayer(orientationLine);
-      }
-    }
+    originalPolygon?.remove();
+    orientationLine?.remove();
     clearDivisions();
     setOriginalPolygon(null);
     setOrientationLine(null);
+
+    const areaInfo = document.getElementById('areaInfo');
+    const angleInfo = document.getElementById('angleInfo');
+    if (areaInfo) areaInfo.textContent = '';
+    if (angleInfo) angleInfo.textContent = '';
   };
 
   const getRandomColor = () => {
