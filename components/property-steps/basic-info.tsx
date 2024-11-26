@@ -267,14 +267,7 @@ export function BasicInfo({ data, onUpdate, errors = {} }: BasicInfoProps) {
 
       <div className="space-y-2">
         <Label>Imágenes</Label>
-        <Input
-          id="images"
-          value={data.images}
-          onChange={(e) => onUpdate({ images: e.target.value })}
-          placeholder="URL de la imagen"
-          className={errors.images ? "border-destructive" : ""}
-        />
-        {/* <ImageUpload
+        <ImageUpload
           value={data.images}
           onChange={(images) => onUpdate({ images })}
           onRemove={(imageUrl) => {
@@ -282,7 +275,7 @@ export function BasicInfo({ data, onUpdate, errors = {} }: BasicInfoProps) {
               images: data.images.filter(url => url !== imageUrl)
             });
           }}
-        /> */}
+        />
         {errors.images?.map((error, index) => (
           <p key={index} className="text-sm text-destructive mt-1">
             {error}
