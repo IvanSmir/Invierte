@@ -1,5 +1,6 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL + "/auth";
+import { useAuth } from "@/contexts/auth-context";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL + "/auth";
 export const loginHttp = async ({
   user,
 }: {
@@ -27,7 +28,7 @@ export const loginHttp = async ({
   }
 };
 
-export const register = async ({
+export const registerHttp = async ({
   user,
 }: {
   user: {

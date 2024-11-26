@@ -10,6 +10,9 @@ import { LotsInfo } from "@/components/property-steps/lots-info";
 import { Summary } from "@/components/property-steps/summary";
 import { useToast } from "@/components/ui/use-toast";
 import { Steps } from "@/components/steps";
+import { addProperty } from "@/utils/property.http";
+import { User } from "@/lib/types/auth";
+
 import {
   basicInfoSchema,
   legalInfoSchema,
@@ -20,6 +23,7 @@ import {
   type LocationInfoValues,
   type LotsInfoValues,
 } from "@/lib/validations/property";
+import { useAuth } from "@/contexts/auth-context";
 
 const steps = [
   { title: "Información Básica", description: "Nombre, descripción y fotos" },
@@ -39,6 +43,7 @@ interface FormData {
 export function PropertyStepper() {
   const [currentStep, setCurrentStep] = useState(0);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const auth = useAuth();
   const [formData, setFormData] = useState<FormData>({
     basicInfo: {
       name: "",
@@ -91,9 +96,7 @@ export function PropertyStepper() {
         case 2:
           validationResult = locationInfoSchema.safeParse(formData.locationInfo);
           break;
-        case 3:
-          validationResult = lotsInfoSchema.safeParse(formData.lotsInfo);
-          break;
+      
         default:
           return true;
       }
@@ -152,10 +155,16 @@ export function PropertyStepper() {
 
     try {
       console.log("Form data:", formData);
-      toast({
-        title: "¡Éxito!",
-        description: "El terreno se ha guardado correctamente",
-      });
+      const { user } = auth;
+      const token = user?.token || '';
+      const property = await addProperty(formData, token);
+      if (property) {
+        console.log("property agregado", property);
+        toast({
+          title: "¡Éxito!",
+          description: "El terreno se ha guardado correctamente",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -192,12 +201,7 @@ export function PropertyStepper() {
             errors={errors}
           />
         );
-      case 3:
-        return (
-          <LotsInfo
-           
-          />
-        );
+    
       case 4:
         return <Summary data={formData} />;
       default:

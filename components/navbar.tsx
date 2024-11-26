@@ -65,7 +65,7 @@ export function Navbar() {
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
                       <AvatarFallback>
-                        {user.name.charAt(0).toUpperCase()}
+                        {user.fullName.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -73,7 +73,7 @@ export function Navbar() {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem className="flex items-center">
                     <User className="mr-2 h-4 w-4" />
-                    <span>{user.name}</span>
+                    <span>{user.fullName}</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-destructive focus:text-destructive"

@@ -12,7 +12,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/auth-context";
 
 const registerSchema = z.object({
-  name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  fullName: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   email: z.string().email("Email inválido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
   confirmPassword: z.string(),
@@ -32,7 +32,7 @@ export function RegisterForm() {
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
+      fullName: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -42,7 +42,7 @@ export function RegisterForm() {
   const onSubmit = async (data: RegisterValues) => {
     try {
       setIsLoading(true);
-      await registerUser(data.name, data.email, data.password);
+      await registerUser(data.fullName, data.email, data.password, data.confirmPassword);
       toast({
         title: "¡Registro exitoso!",
         description: "Tu cuenta ha sido creada correctamente",
@@ -58,19 +58,19 @@ export function RegisterForm() {
       setIsLoading(false);
     }
   };
-
+ 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
       <div className="space-y-2">
         <Label htmlFor="name">Nombre</Label>
         <Input
-          id="name"
+          id="fullName"
           disabled={isLoading}
-          {...form.register("name")}
+          {...form.register("fullName")}
         />
-        {form.formState.errors.name && (
+        {form.formState.errors.fullName && (
           <p className="text-sm text-destructive">
-            {form.formState.errors.name.message}
+            {form.formState.errors.fullName.message}
           </p>
         )}
       </div>

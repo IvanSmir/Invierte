@@ -1,6 +1,5 @@
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL + "/reservation";
-
 export const getReservation = async ( token: string) => {
     try {
       
