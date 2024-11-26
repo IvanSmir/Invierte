@@ -96,7 +96,9 @@ export function PropertyStepper() {
         case 2:
           validationResult = locationInfoSchema.safeParse(formData.locationInfo);
           break;
-      
+        case 3:
+          validationResult = lotsInfoSchema.safeParse(formData.lotsInfo);
+          break;
         default:
           return true;
       }
@@ -201,7 +203,12 @@ export function PropertyStepper() {
             errors={errors}
           />
         );
-    
+      case 3:
+        return (
+          <LotsInfo
+           
+          />
+        );
       case 4:
         return <Summary data={formData} />;
       default:
