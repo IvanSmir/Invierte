@@ -68,8 +68,7 @@ export function PropertyStepper() {
       manualCoordinates: "",
     },
     lotsInfo: {
-      totalLots: 0,
-      pricePerLot: 0,
+      lots: [],
     },
   });
 
@@ -206,7 +205,7 @@ export function PropertyStepper() {
       case 3:
         return (
           <LotsInfo
-           
+
           />
         );
       case 4:

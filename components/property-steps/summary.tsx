@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Lot } from "@/lib/types";
 import Image from "next/image";
 
 interface SummaryData {
@@ -23,8 +24,7 @@ interface SummaryData {
     manualCoordinates: string;
   };
   lotsInfo: {
-    totalLots: number;
-    pricePerLot: number;
+    lots: Lot[];
   };
 }
 

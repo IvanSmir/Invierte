@@ -10,7 +10,6 @@ interface PropertyLotsInfoProps {
 
 export function PropertyLotsInfo({ lots }: PropertyLotsInfoProps) {
   const availableLots = lots.filter(lot => lot.status === "available");
-  const totalValue = lots.reduce((sum, lot) => sum + lot.price, 0);
 
   return (
     <Card>
@@ -28,10 +27,7 @@ export function PropertyLotsInfo({ lots }: PropertyLotsInfoProps) {
               <p className="text-sm text-muted-foreground">Lotes Disponibles</p>
               <p className="text-2xl font-bold">{availableLots.length}</p>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Valor Total</p>
-              <p className="text-2xl font-bold text-primary">{formatCurrency(totalValue)}</p>
-            </div>
+
           </div>
         </div>
       </CardContent>

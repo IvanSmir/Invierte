@@ -53,14 +53,17 @@ export const locationInfoSchema = z.object({
 });
 
 export const lotsInfoSchema = z.object({
-  totalLots: z
-    .number()
-    .min(1, "Debe tener al menos 1 lote")
-    .max(1000, "No puede exceder los 1000 lotes"),
-  pricePerLot: z
-    .number()
-    .min(1, "El precio debe ser mayor a 0")
-    .max(10000000, "El precio por lote no puede exceder los 10 millones"),
+  lots: z.array(
+    z.object({
+      number: z.string().nonempty("El número del lote es obligatorio"),
+      area: z.number().min(1, "El área debe ser mayor a 0"),
+      status: z.enum(["available", "sold", "reserved"]),
+      coordinates: z
+        .array(z.tuple([z.number(), z.number()]))
+        .min(3, "Debe tener al menos 3 coordenadas")
+        .nonempty("Las coordenadas son obligatorias"),
+    })
+  ),
 });
 
 export type BasicInfoValues = z.infer<typeof basicInfoSchema>;

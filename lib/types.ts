@@ -1,14 +1,13 @@
 export interface Lot {
-  id: number;
+  id?: string;
   number: string;
   area: number;
-  price: number;
   status: "available" | "reserved" | "sold";
   coordinates: [number, number][];
 }
 
 export interface Property {
-  id: number;
+  id: string;
   name: string;
   description: string;
   price: number;
