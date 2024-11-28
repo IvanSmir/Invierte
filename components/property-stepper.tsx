@@ -164,7 +164,7 @@ export function PropertyStepper() {
 
   const handleSubmit = async () => {
     const allStepsValid = [0, 1, 2, 3].every(step => validateStep(step));
-
+  
     if (!allStepsValid) {
       toast({
         title: "Error",
@@ -173,45 +173,64 @@ export function PropertyStepper() {
       });
       return;
     }
-
-
+  
     try {
       const { user } = auth;
       const token = user?.token || "";
-    
-      
+  
       const propertyData = {
         name: formData.basicInfo.name,
         description: formData.basicInfo.description,
-        images: formData.basicInfo.images, //  falta parsear las imagenes
-        price: formData.lotsInfo.lots.reduce((sum, lot) => sum + lot.price, 0), // precio tatalxd
-        size: formData.lotsInfo.lots.reduce((sum, lot) => sum + lot.area, 0), //area total
-        type: "Residencial", 
-        location: formData.basicInfo.address, 
-        coordinates: formData.locationInfo.coordinates, 
+        price: formData.lotsInfo.lots.reduce((sum, lot) => sum + lot.price, 0), //precio totalxd
+        size: formData.lotsInfo.lots.reduce((sum, lot) => sum + lot.area, 0), 
+        type: "Residencial",
+        location: formData.basicInfo.address,
+        coordinates: formData.locationInfo.coordinates,
         propertyNumber: formData.legalInfo.propertyNumber,
-        registryInfo: formData.legalInfo.registryInfo, 
-        departmentId: formData.basicInfo.departmentId, 
-        cityId: formData.basicInfo.cityId, 
-        neighborhoodId: formData.basicInfo.neighborhoodId || '', 
+        registryInfo: formData.legalInfo.registryInfo,
+        departmentId: formData.basicInfo.departmentId,
+        cityId: formData.basicInfo.cityId,
+        neighborhoodId: formData.basicInfo.neighborhoodId || '',
         address: formData.basicInfo.address,
         manualCoordinates: formData.locationInfo.manualCoordinates || "",
-        documents: formData.legalInfo.documents || [],
         lots: formData.lotsInfo.lots.map(lot => ({
           number: lot.number,
           area: lot.area,
           price: lot.price,
           status: lot.status,
-          coordinates: lot.coordinates // Coordenadas de cada lote
-        }))
+          coordinates: lot.coordinates,
+        })),
       };
-      const json = JSON.stringify(propertyData);
-
-      console.log("json: ", json); // Verifica la estructura
-
-      await addProperty(json, token); // Enviar la solicitud
-
   
+      const formDataToSend = new FormData();
+  
+      formDataToSend.append('createPropertyDto', JSON.stringify(propertyData));
+  
+
+    formData.basicInfo.images.forEach((file) => {
+      formDataToSend.append("images", file);
+    });
+
+    formData.legalInfo.documents.forEach((file) => {
+      formDataToSend.append("documents", file);
+    });
+
+      const response = await fetch('http://localhost:7777/property', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formDataToSend,
+      });
+        if (!response.ok) {
+        throw new Error(`Error del servidor: ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      const responseElement = document.getElementById('response');
+      if (responseElement) {
+        responseElement.textContent = JSON.stringify(data, null, 2);
+      }
       toast({
         title: "Éxito",
         description: "La propiedad fue guardada correctamente.",
