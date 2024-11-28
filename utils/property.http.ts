@@ -1,14 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL + "/property";
 
-export const getProperty = async ( token: string) => {
+export const getProperty = async ( token: string, queryParams: any) => {
   try {
-    const queryParams = new URLSearchParams({
-      page: '1', 
-      limit: '10', 
-      departmentId: '1',
-      cityId: '1',
-      neighborhoodId: '1',
-    });
     
     const response = await fetch(`${API_URL}?${queryParams.toString()}`, {
       method: "GET",
@@ -33,24 +26,15 @@ export const getProperty = async ( token: string) => {
 
 export const getPropertyById = async (id: string, token: string) => {
   try {
-    const response = await fetch(`${API_URL}/${id}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+    const data = await getProperty(token, {
+      page: 1,
+      limit: 20,
+      departmentId: "3",
+      cityId: "5",
+      neighborhoodId: "8",
     });
-
-    if (response.status == 404) {
-      throw new Error("Propiedad no encontrada");
-    }
-    if (!response.ok) {
-      throw new Error("Error al obtener Propiedad");
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error: any) {
+  }
+catch (error: any) {
     throw new Error((error as Error).message || "Error al obtener Propiedad");
   }
 };
@@ -58,6 +42,7 @@ export const getPropertyById = async (id: string, token: string) => {
 
 
 export const addProperty = async (property: any, token: string) => {
+  console.log("property: ", property);
   try {
     const response = await fetch(API_URL, {
       method: "POST",
@@ -69,7 +54,8 @@ export const addProperty = async (property: any, token: string) => {
     });
 
     if (!response.ok) {
-      throw new Error("Error al agregar Propiedad");
+      const errorDetails = await response.json();
+      throw new Error(errorDetails.message || "Error al agregar Propiedad");
     }
 
     const data = await response.json();
@@ -78,7 +64,6 @@ export const addProperty = async (property: any, token: string) => {
     throw new Error(error.message || "Error al agregar Propiedad");
   }
 };
- 
 export const updateProperty = async (id: string, updatedProperty: any, token: string) => {
   try {
     const response = await fetch(`${API_URL}/${id}`, {

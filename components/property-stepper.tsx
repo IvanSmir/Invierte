@@ -114,10 +114,11 @@ export function PropertyStepper() {
           console.log("Current Step: ", currentStep);
 
           validationResult = lotsInfoSchema.safeParse(formData.lotsInfo);
+          console.log("formData.lotsInfo: ", formData.lotsInfo);
+          console.log("Validation result: ", validationResult);
           break;
         default:
           console.log("Current Step: ", currentStep);
-
           return true;
       }
 
@@ -174,48 +175,55 @@ export function PropertyStepper() {
     }
 
 
-  try {
-    const { user } = auth;
-    const token = user?.token || "";
+    try {
+      const { user } = auth;
+      const token = user?.token || "";
+    
+      
+      const propertyData = {
+        name: formData.basicInfo.name,
+        description: formData.basicInfo.description,
+        images: formData.basicInfo.images, //  falta parsear las imagenes
+        price: formData.lotsInfo.lots.reduce((sum, lot) => sum + lot.price, 0), // precio tatalxd
+        size: formData.lotsInfo.lots.reduce((sum, lot) => sum + lot.area, 0), //area total
+        type: "Residencial", 
+        location: formData.basicInfo.address, 
+        coordinates: formData.locationInfo.coordinates, 
+        propertyNumber: formData.legalInfo.propertyNumber,
+        registryInfo: formData.legalInfo.registryInfo, 
+        departmentId: formData.basicInfo.departmentId, 
+        cityId: formData.basicInfo.cityId, 
+        neighborhoodId: formData.basicInfo.neighborhoodId || '', 
+        address: formData.basicInfo.address,
+        manualCoordinates: formData.locationInfo.manualCoordinates || "",
+        documents: formData.legalInfo.documents || [],
+        lots: formData.lotsInfo.lots.map(lot => ({
+          number: lot.number,
+          area: lot.area,
+          price: lot.price,
+          status: lot.status,
+          coordinates: lot.coordinates // Coordenadas de cada lote
+        }))
+      };
+      const json = JSON.stringify(propertyData);
 
-    const formDataToSend = new FormData();
+      console.log("json: ", json); // Verifica la estructura
 
-    // Añadir información básica
-    Object.entries(formData.basicInfo).forEach(([key, value]) => {
-      if (key === "images" && Array.isArray(value)) {
-        value.forEach((file) => formDataToSend.append("images", file));
-      } else {
-        formDataToSend.append(key, String(value));
-      }
-    });
+      await addProperty(json, token); // Enviar la solicitud
 
-    // Añadir información legal
-    Object.entries(formData.legalInfo).forEach(([key, value]) => {
-      if (key === "documents" && Array.isArray(value)) {
-        value.forEach((file) => formDataToSend.append("documents", file));
-      } else {
-        formDataToSend.append(key, String(value));
-      }
-    });
-
-    // Añadir el resto de los datos
-    formDataToSend.append("locationInfo", JSON.stringify(formData.locationInfo));
-    formDataToSend.append("lotsInfo", JSON.stringify(formData.lotsInfo));
-
-    // Enviar solicitud
-    await addProperty(formDataToSend, token);
-
-    toast({
-      title: "Éxito",
-      description: "La propiedad fue guardada correctamente.",
-    });
-  } catch (error: any) {
-    toast({
-      title: "Error",
-      description: error.message || "Hubo un error al guardar la propiedad.",
-      variant: "destructive",
-    });
-  }
+  
+      toast({
+        title: "Éxito",
+        description: "La propiedad fue guardada correctamente.",
+      });
+    } catch (error: any) {
+      console.error("Error al guardar la propiedad:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Hubo un error al guardar la propiedad.",
+        variant: "destructive",
+      });
+    }
   };
   const renderStep = () => {
     switch (currentStep) {

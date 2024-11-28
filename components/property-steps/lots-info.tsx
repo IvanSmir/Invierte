@@ -26,12 +26,12 @@ interface PropertyMapProps {
 interface LotsInfoProperties {
   data: {
     lots: Array<{
-      number: string;
+     number: string;
       price: number;
       area: number;
       status: "available" | "sold" | "reserved";
       coordinates: [[number, number], ...[number, number][]]; // Permite múltiples coordenadas
-    }>;
+    }>; 
   };
   location:  [number, number][];
   onUpdate: (data: any) => void;
@@ -40,6 +40,10 @@ interface LotsInfoProperties {
 
 
 export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProperties) {
+  
+  const [lots, setLots] = useState(data.lots);
+  const [verticalDivisions, setVerticalDivisions] = useState(2);
+  const [horizontalDivisions, setHorizontalDivisions] = useState(2);
   
   const mapRef = useRef(null);
   const [map, setMap] = useState<L.Map | null>(null);
@@ -124,6 +128,8 @@ export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProp
         }
         setOriginalPolygon(layer);
         showArea(turf.area(layer.toGeoJSON()));
+      
+    
       }
   
       drawnLayer.addLayer(layer);
@@ -159,6 +165,8 @@ export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProp
 
     clearDivisions();
 
+    data.lots = [];
+
     const polygon = originalPolygon.toGeoJSON();
     const bbox = turf.bbox(polygon);
     const bboxPolygon = turf.bboxPolygon(bbox);
@@ -182,7 +190,10 @@ export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProp
         try {
 
           const features = turf.featureCollection([polygon, rotatedDivision]);
+          console.log("features: ", features);
+
           const intersection = turf.intersect(features);
+          console.log("intersection: ", intersection);
           if (intersection) {
             createDivisionLayer(intersection, `${i + 1}-${j + 1}`);
           }
@@ -206,7 +217,20 @@ export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProp
       }
     }).addTo(map);
 
+
+
     const center = turf.center(geometry);
+    data.lots.push({
+      number: label,
+      area: area,
+      status: "available",
+      price: 20000,
+      coordinates: geometry.geometry.coordinates[0]
+    });
+    onUpdate(data);
+    console.log("updatedData: ahora ", data);
+
+
     L.marker([center.geometry.coordinates[1], center.geometry.coordinates[0]], {
       icon: L.divIcon({
         className: 'area-label',
@@ -217,7 +241,10 @@ export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProp
     }).addTo(map);
 
     setDivisions(prev => [...prev, layer]);
+   
+
   };
+
 
   const clearDivisions = () => {
     divisions.forEach(layer => layer.remove());
@@ -265,10 +292,10 @@ export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProp
         <div id="areaInfo"></div>
         <div>
           <label>Divisiones en dirección de la línea:</label>
-          <input type="number" id="verticalDivisions" defaultValue={2} min={1} max={20} />
+          <input type="number" id="verticalDivisions" defaultValue={2} min={1} max={20} onChange={(e) => setVerticalDivisions(parseInt(e.target.value))} />
           <label>Divisiones perpendiculares:</label>
-          <input type="number" id="horizontalDivisions" defaultValue={2} min={1} max={20} />
-          <button onClick={() => divideTerrain(2, 2)}>Aplicar Divisiones</button>
+          <input type="number" id="horizontalDivisions" defaultValue={2} min={1} max={20}  onChange={(e) => setHorizontalDivisions(parseInt(e.target.value))} />
+          <button onClick={() => divideTerrain(horizontalDivisions, verticalDivisions)}>Aplicar Divisiones</button>
         </div>
         {/* <button onClick={clearMap} style={{ backgroundColor: '#dc3545' }}>
           Limpiar Mapa
