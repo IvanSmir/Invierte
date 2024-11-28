@@ -55,6 +55,9 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
       setSelectedLot(lot);
     }
   };
+  const handleReservationComplete = () => {
+    fetchProperty(); // Recargar los datos de la propiedad
+  };
   useEffect(() => {
     fetchProperty();
   }, []);
@@ -113,6 +116,7 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
           lot={selectedLot}
           open={purchaseDialogOpen}
           onOpenChange={setPurchaseDialogOpen}
+          onReservationComplete={handleReservationComplete}
         />
       )}
     </div>

@@ -17,6 +17,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Property, Lot } from "@/lib/types";
 import { formatCurrency } from "@/lib/utils";
+import { useAuth } from "@/contexts/auth-context";
+import { addReservation } from "@/utils/reservation.http";
+import { toast } from "./ui/use-toast";
 
 const purchaseSchema = z.object({
   name: z.string().min(2, "El nombre es requerido"),
@@ -31,26 +34,45 @@ interface PurchaseDialogProps {
   lot: Lot;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onReservationComplete: () => void; // Nuevo prop
+
 }
 
-export function PurchaseDialog({ property, lot, open, onOpenChange }: PurchaseDialogProps) {
+interface Reservation {
+  lotId: string | undefined;
+  phone: string;
+}
+
+export function PurchaseDialog({ property, lot, open, onOpenChange, onReservationComplete  }: PurchaseDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
+  const auth = useAuth();
+  const token = auth.user?.token || "";
 
   const form = useForm<PurchaseValues>({
     resolver: zodResolver(purchaseSchema),
     defaultValues: {
-      name: "",
-      email: "",
+      name: user?.fullName || "",
+      email: user?.email || "",
       phone: "",
     },
   });
+  const onSubmit = async () => {
 
-  const onSubmit = async (data: PurchaseValues) => {
     setIsSubmitting(true);
+    const reservation = {
+      lotId: lot.id,
+      phone: form.getValues("phone"),
+    };
+    
+    console.log("reservation: ", reservation);
     try {
-      // Aquí iría la lógica de reserva real
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+  
+      await addReservation(reservation, token);
       onOpenChange(false);
+      onReservationComplete(); // Notificar al padre
+
+    
     } catch (error) {
       console.error("Error al procesar la reserva:", error);
     } finally {
@@ -58,7 +80,6 @@ export function PurchaseDialog({ property, lot, open, onOpenChange }: PurchaseDi
     }
   };
 
-  if (!lot) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -78,6 +99,7 @@ export function PurchaseDialog({ property, lot, open, onOpenChange }: PurchaseDi
               id="name"
               {...form.register("name")}
               placeholder="Juan Pérez"
+              disabled
             />
             {form.formState.errors.name && (
               <p className="text-sm text-destructive">
@@ -93,6 +115,7 @@ export function PurchaseDialog({ property, lot, open, onOpenChange }: PurchaseDi
               type="email"
               {...form.register("email")}
               placeholder="juan@ejemplo.com"
+              disabled
             />
             {form.formState.errors.email && (
               <p className="text-sm text-destructive">
