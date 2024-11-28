@@ -3,6 +3,7 @@ export interface Lot {
   number: string;
   area: number;
   status: "available" | "reserved" | "sold";
+  price: number;
   coordinates: [number, number][];
 }
 

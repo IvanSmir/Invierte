@@ -68,9 +68,18 @@ export function PropertyStepper() {
       manualCoordinates: "",
     },
     lotsInfo: {
-      lots: [],
+      lots: [
+        {
+          price: 0,
+          number: "",
+          area: 0,
+          status: "available",
+          coordinates:[[0,0]],
     },
+      ],
+    }
   });
+ 
 
   const { toast } = useToast();
 
@@ -205,7 +214,10 @@ export function PropertyStepper() {
       case 3:
         return (
           <LotsInfo
-
+            data={formData.lotsInfo}
+            onUpdate={(data) => updateFormData("lotsInfo", data)}
+            errors={errors}
+            location = {formData.locationInfo.coordinates}
           />
         );
       case 4:

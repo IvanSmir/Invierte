@@ -102,6 +102,7 @@ export default function PropertyMap({
               <h3 className="font-semibold">Lote {lot.number}</h3>
               <div className="text-sm space-y-1">
                 <p>Área: {lot.area}m²</p>
+                
                 <p>Precio: {formatCurrency(lot.price)}</p>
                 <p className="capitalize">Estado: {lot.status}</p>
               </div>
