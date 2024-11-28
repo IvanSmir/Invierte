@@ -11,6 +11,6 @@ module.exports = {
   reactStrictMode: true,
   // next.config.js
   images: {
-    domains: ["images.unsplash.com"],
+    domains: ["images.unsplash.com", "eufaoolahqytkllespkw.supabase.co"],
   },
 };

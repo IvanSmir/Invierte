@@ -43,7 +43,7 @@ interface Reservation {
   phone: string;
 }
 
-export function PurchaseDialog({ property, lot, open, onOpenChange, onReservationComplete  }: PurchaseDialogProps) {
+export function PurchaseDialog({ property, lot, open, onOpenChange, onReservationComplete }: PurchaseDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
   const auth = useAuth();
@@ -64,15 +64,18 @@ export function PurchaseDialog({ property, lot, open, onOpenChange, onReservatio
       lotId: lot.id,
       phone: form.getValues("phone"),
     };
-    
-    console.log("reservation: ", reservation);
+
     try {
-  
+
       await addReservation(reservation, token);
       onOpenChange(false);
-      onReservationComplete(); // Notificar al padre
+      onReservationComplete();
+      toast({
+        title: "Reserva realizada",
+        description: "La reserva se ha realizado correctamente.",
+        duration: 3000,
+      });
 
-    
     } catch (error) {
       console.error("Error al procesar la reserva:", error);
     } finally {

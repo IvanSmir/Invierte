@@ -14,6 +14,7 @@ import { PropertyLotsInfo } from "./property-lots-info";
 import { PurchaseDialog } from "@/components/purchase-dialog";
 import dynamic from "next/dynamic";
 import { getPropertyById } from "@/utils/property.http";
+import PropertyLoading from "@/app/marketplace/[id]/loading";
 
 const PropertyMap = dynamic(() => import("@/components/property-map"), {
   ssr: false,
@@ -46,6 +47,7 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
         title: "Acceso denegado",
         description: "Debes iniciar sesión para seleccionar un lote",
         variant: "destructive",
+        duration: 3000,
       });
       router.push("/auth");
       return;
@@ -63,7 +65,7 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
   }, []);
 
   if (!property) {
-    return <div>Cargando...</div>; // O algún otro componente de carga
+    return PropertyLoading();
   }
 
   return (

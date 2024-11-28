@@ -1,12 +1,11 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL + "/property";
 
-export const getProperty = async ( token: string, queryParams: any) => {
+export const getProperty = async (token?: string, queryParams?: any) => {
   try {
-    
     const response = await fetch(`${API_URL}?${queryParams.toString()}`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: token ? `Bearer ${token}` : "Bearer ",
         "Content-Type": "application/json",
       },
     });
@@ -44,19 +43,15 @@ export const getPropertyById = async (id: string, token: string) => {
     throw new Error((error as Error).message || "Error al obtener Propiedad");
   }
 };
- 
-
 
 export const addProperty = async (property: any, token: string) => {
-  console.log("property: ", property);
   try {
     const response = await fetch(API_URL, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(property),
+      body: property,
     });
 
     if (!response.ok) {
@@ -70,7 +65,11 @@ export const addProperty = async (property: any, token: string) => {
     throw new Error(error.message || "Error al agregar Propiedad");
   }
 };
-export const updateProperty = async (id: string, updatedProperty: any, token: string) => {
+export const updateProperty = async (
+  id: string,
+  updatedProperty: any,
+  token: string
+) => {
   try {
     const response = await fetch(`${API_URL}/${id}`, {
       method: "PATCH",

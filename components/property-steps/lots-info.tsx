@@ -1,15 +1,20 @@
-// components/Map.js
 import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
-import 'leaflet-draw';  // Asegúrate de importar también la funcionalidad de la librería
-
+import 'leaflet-draw';
 import * as turf from '@turf/turf';
 import { Lot, Property } from '@/lib/types';
 import { Position } from "geojson";
 import { Feature, FeatureCollection, Polygon, MultiPolygon, GeoJsonProperties } from 'geojson';
-
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { InfoIcon } from "lucide-react";
+import { toast } from '../ui/use-toast';
 
 interface PropertyMapProps {
   center: [number, number];
@@ -17,34 +22,35 @@ interface PropertyMapProps {
   property?: Property;
   onLotSelect?: (lot: Lot) => void;
   onMapClick?: (coord: [number, number]) => void;
-  coordinates?: [number, number][]; // Coordinates to draw polygon
-  orientationLine?: [number, number][]; // Optional orientation line
-  divisions?: Position[][]; // Optional divisions
+  coordinates?: [number, number][];
+  orientationLine?: [number, number][];
+  divisions?: Position[][];
   onDrawCreated?: (type: string, coordinates: [number, number][]) => void;
-  drawPolygon: boolean; // Flag to enable drawing polygons
+  drawPolygon: boolean;
 }
+
 interface LotsInfoProperties {
   data: {
     lots: Array<{
-     number: string;
+      number: string;
       price: number;
       area: number;
       status: "available" | "sold" | "reserved";
-      coordinates: [[number, number], ...[number, number][]]; // Permite múltiples coordenadas
-    }>; 
+      coordinates: [[number, number], ...[number, number][]];
+    }>;
   };
-  location:  [number, number][];
+  location: [number, number][];
   onUpdate: (data: any) => void;
   errors?: Record<string, string[]>;
 }
 
-
 export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProperties) {
-  
   const [lots, setLots] = useState(data.lots);
   const [verticalDivisions, setVerticalDivisions] = useState(2);
   const [horizontalDivisions, setHorizontalDivisions] = useState(2);
-  
+  const [areaInfo, setAreaInfo] = useState<string>('');
+  const [angleInfo, setAngleInfo] = useState<string>('');
+  const [pricePerLot, setPricePerLot] = useState(0);
   const mapRef = useRef(null);
   const [map, setMap] = useState<L.Map | null>(null);
   const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
@@ -53,47 +59,39 @@ export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProp
   const [divisions, setDivisions] = useState<L.Layer[]>([]);
   const [rotationAngle, setRotationAngle] = useState(0);
 
-
   useEffect(() => {
-    console.log(location)
     if (!mapRef.current) return;
-  
+
     const initialMap = L.map(mapRef.current, {
       center: [41.4036, 2.1744],
       zoom: 18,
     });
-  
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap contributors',
     }).addTo(initialMap);
-  
+
     setMap(initialMap);
-  
+
     const drawnLayer = new L.FeatureGroup();
     initialMap.addLayer(drawnLayer);
     setDrawnItems(drawnLayer);
-  
+
     if (location && location.length > 2) {
       const polygon = L.polygon(location, {
         color: '#3388ff',
         weight: 2,
       }).addTo(initialMap);
-  
-      setOriginalPolygon(polygon); 
-  
+
+      setAreaInfo(turf.area(polygon.toGeoJSON()).toFixed(2));
+      setOriginalPolygon(polygon);
       initialMap.fitBounds(polygon.getBounds());
     }
-  
+
     const drawControl = new L.Control.Draw({
       draw: {
-        polygon: {
-          allowIntersection: false,
-          showArea: true,
-          shapeOptions: {
-            color: '#3388ff',
-          },
-        },
+        polygon: false,
         polyline: {
           shapeOptions: {
             color: '#f00',
@@ -111,11 +109,11 @@ export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProp
       },
     });
     initialMap.addControl(drawControl);
-  
+
     initialMap.on('draw:created', (e: L.LeafletEvent) => {
-      const layer = (e as any).layer; 
+      const layer = (e as any).layer;
       const layerType = (e as any).layerType;
-  
+
       if (layerType === 'polyline') {
         if (orientationLine) {
           initialMap.removeLayer(orientationLine);
@@ -127,19 +125,16 @@ export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProp
           initialMap.removeLayer(originalPolygon);
         }
         setOriginalPolygon(layer);
-        showArea(turf.area(layer.toGeoJSON()));
-      
-    
+        showArea((turf.area(layer.toGeoJSON())));
       }
-  
+
       drawnLayer.addLayer(layer);
     });
-  
+
     return () => {
       initialMap.remove();
     };
   }, [location]);
-  
 
   const calculateOrientation = (line: L.Polyline) => {
     const coords = line.getLatLngs() as L.LatLng[];
@@ -150,21 +145,21 @@ export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProp
     const dy = end.lat - start.lat;
     const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
     setRotationAngle(angle);
-
-    const angleInfo = document.getElementById('angleInfo');
-    if (angleInfo) {
-      angleInfo.textContent = `Ángulo de orientación: ${Math.round(angle)}°`;
-    }
+    setAngleInfo(`${Math.round(angle)}°`);
   };
 
   const divideTerrain = (horizontalDivisions: number, verticalDivisions: number) => {
     if (!originalPolygon || !orientationLine) {
-      alert('Dibuje primero el polígono y la línea de orientación');
+      toast({
+        title: "Error",
+        description: "Dibuje primero el polígono y la línea de orientación",
+        variant: "destructive",
+        duration: 3000,
+      });
       return;
     }
 
     clearDivisions();
-
     data.lots = [];
 
     const polygon = originalPolygon.toGeoJSON();
@@ -188,12 +183,8 @@ export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProp
         });
 
         try {
-
           const features = turf.featureCollection([polygon, rotatedDivision]);
-          console.log("features: ", features);
-
           const intersection = turf.intersect(features);
-          console.log("intersection: ", intersection);
           if (intersection) {
             createDivisionLayer(intersection, `${i + 1}-${j + 1}`);
           }
@@ -217,19 +208,15 @@ export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProp
       }
     }).addTo(map);
 
-
-
     const center = turf.center(geometry);
     data.lots.push({
       number: label,
       area: area,
       status: "available",
-      price: 20000,
+      price: pricePerLot,
       coordinates: geometry.geometry.coordinates[0]
     });
     onUpdate(data);
-    console.log("updatedData: ahora ", data);
-
 
     L.marker([center.geometry.coordinates[1], center.geometry.coordinates[0]], {
       icon: L.divIcon({
@@ -241,27 +228,18 @@ export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProp
     }).addTo(map);
 
     setDivisions(prev => [...prev, layer]);
-   
-
   };
-
 
   const clearDivisions = () => {
     divisions.forEach(layer => layer.remove());
     setDivisions([]);
   };
-  
+
   const clearMap = () => {
-    originalPolygon?.remove();
     orientationLine?.remove();
     clearDivisions();
-    setOriginalPolygon(null);
     setOrientationLine(null);
-
-    const areaInfo = document.getElementById('areaInfo');
-    const angleInfo = document.getElementById('angleInfo');
-    if (areaInfo) areaInfo.textContent = '';
-    if (angleInfo) angleInfo.textContent = '';
+    setAngleInfo('');
   };
 
   const getRandomColor = () => {
@@ -278,32 +256,118 @@ export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProp
       console.error("Invalid area value.");
       return;
     }
-    const areaInfoElement = document.getElementById('areaInfo');
-    if (areaInfoElement) {
-      areaInfoElement.textContent = `Área total: ${Math.round(area)} m² (${(area / 10000).toFixed(2)} hectáreas)`;
-    } else {
-      console.error("Element with ID 'areaInfo' not found.");
-    }
+    setAreaInfo(`${Math.round(area)} m² (${(area / 10000).toFixed(2)} hectáreas)`);
   };
+
   return (
-    <div>
-      <div>
-        <h2>División de Terrenos</h2>
-        <div id="areaInfo"></div>
-        <div>
-          <label>Divisiones en dirección de la línea:</label>
-          <input type="number" id="verticalDivisions" defaultValue={2} min={1} max={20} onChange={(e) => setVerticalDivisions(parseInt(e.target.value))} />
-          <label>Divisiones perpendiculares:</label>
-          <input type="number" id="horizontalDivisions" defaultValue={2} min={1} max={20}  onChange={(e) => setHorizontalDivisions(parseInt(e.target.value))} />
-          <button onClick={() => divideTerrain(horizontalDivisions, verticalDivisions)}>Aplicar Divisiones</button>
-        </div>
-        {/* <button onClick={clearMap} style={{ backgroundColor: '#dc3545' }}>
-          Limpiar Mapa
-        </button> */}
-      </div>
-      <div ref={mapRef} style={{ height: '700px', width: '100%' }}></div>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>División de Terrenos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {areaInfo && (
+              <Alert>
+                <InfoIcon className="h-4 w-4" />
+                <AlertDescription>
+                  Realiza la division de lotes marcando la línea de orientacion en el mapa y ingresando el número de divisiones horizontales y verticales
+                </AlertDescription>
+              </Alert>
+            )}
+            {areaInfo && (
+              <Alert>
+                <InfoIcon className="h-4 w-4" />
+                <AlertDescription>
+                  Área total: {areaInfo} m²
+                </AlertDescription>
+              </Alert>
+            )}
+            {errors.lots && (
+              <Alert>
+                <InfoIcon className="h-4 w-4" />
+                <AlertDescription>
+                  <p className="text-sm text-destructive mt-1">
+                    Debe realizar la divisón de los terrenos antes de continuar
+                  </p>
+                  <p className="text-sm text-destructive mt-1">
+                    Debe ingresar un precio por lote válido
+                  </p>
+                </AlertDescription>
+              </Alert>
+            )}
+            {angleInfo && (
+              <Alert>
+                <InfoIcon className="h-4 w-4" />
+                <AlertDescription>
+                  Ángulo de orientación: {angleInfo}
+                </AlertDescription>
+              </Alert>
+            )}
+
+
+            <div className="space-y-2">
+              <Label htmlFor="pricePerLot">Precio por lote en USD</Label>
+              <Input
+                type="number"
+                id="pricePerLot"
+                value={pricePerLot}
+                min={1}
+                max={10000000}
+                onChange={(e) => setPricePerLot(parseInt(e.target.value))}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Precio por lote
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="verticalDivisions">
+                  Divisiones en dirección de la línea
+                </Label>
+                <Input
+                  type="number"
+                  id="verticalDivisions"
+                  value={verticalDivisions}
+                  min={1}
+                  max={20}
+                  onChange={(e) => setVerticalDivisions(parseInt(e.target.value))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="horizontalDivisions">
+                  Divisiones perpendiculares
+                </Label>
+                <Input
+                  type="number"
+                  id="horizontalDivisions"
+                  value={horizontalDivisions}
+                  min={1}
+                  max={20}
+                  onChange={(e) => setHorizontalDivisions(parseInt(e.target.value))}
+                />
+              </div>
+            </div>
+
+            <div className="flex space-x-2">
+              <Button
+                onClick={() => divideTerrain(horizontalDivisions, verticalDivisions)}
+                className="flex-1"
+              >
+                Aplicar Divisiones
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div
+        ref={mapRef}
+        style={{ height: '700px', width: '100%' }}
+      />
     </div>
   );
-};
+}
 
-export default Map;
+export default LotsInfo;

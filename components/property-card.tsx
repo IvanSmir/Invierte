@@ -14,12 +14,12 @@ interface PropertyCardProps {
 }
 
 export function PropertyCard({ property }: PropertyCardProps) {
-  console.log ("property: ", property);
+
   return (
     <Card className="overflow-hidden">
       <div className="aspect-[4/3] relative">
         <Image
-          src={property.images[0]}
+          src={property.images[0] ? property.images[0]?.url : "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&h=800&fit=crop"}
           alt={property.name}
           fill
           className="object-cover"

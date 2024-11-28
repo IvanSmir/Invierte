@@ -8,7 +8,7 @@ interface User {
   fullName: string;
   email: string;
   token: string;
-  
+
 }
 
 interface AuthContextType {
@@ -34,11 +34,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await loginHttp({ user: { email, password } });
       const { user, token } = response;
-      setUser({...user, token});
-      localStorage.setItem("user", JSON.stringify({...user, token}));
-    } catch (error) {
+      setUser({ ...user, token });
+      localStorage.setItem("user", JSON.stringify({ ...user, token }));
+    } catch (error: any) {
       console.error("Error al iniciar sesión:", error);
-      throw new Error("Error al iniciar sesión");
+      if (error?.message == "Credenciales inválidas") {
+        throw new Error("Credenciales inválidas");
+      } else {
+        throw new Error("Error al iniciar sesión");
+      }
     }
   };
 
@@ -46,8 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await registerHttp({ user: { fullName, email, password, confirmPassword } });
       const { user, token } = response;
-      setUser({...user, token});
-      localStorage.setItem("user", JSON.stringify({...user, token}));
+      setUser({ ...user, token });
+      localStorage.setItem("user", JSON.stringify({ ...user, token }));
     } catch (error) {
       console.error("Error al registrarse:", error);
       throw new Error("Error al registrarse");

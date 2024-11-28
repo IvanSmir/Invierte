@@ -19,10 +19,10 @@ export function PropertyGrid() {
           page: "1",
           limit: "10",
         });
-  
+
         // Obtener la respuesta del API
         const data = await getProperty(token, queryParams);
-  
+
         // Asignar solo el array de propiedades al estado
         if (data?.properties) {
           setProperties(data.properties); // Corregido
@@ -30,14 +30,13 @@ export function PropertyGrid() {
           console.error("La respuesta no contiene propiedades válidas:", data);
           setProperties([]);
         }
-  
-        console.log("data: ", data);
-        console.log("properties: ", data.properties); // Cambiado
+
+
       } catch (error) {
         console.error("Error al obtener las propiedades:", error);
       }
     };
-  
+
     fetchData();
   }, []);
 

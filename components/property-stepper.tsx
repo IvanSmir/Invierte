@@ -24,6 +24,8 @@ import {
   type LotsInfoValues,
 } from "@/lib/validations/property";
 import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
+import { set } from "zod";
 
 const steps = [
   { title: "Información Básica", description: "Nombre, descripción y fotos" },
@@ -41,6 +43,8 @@ interface FormData {
 }
 
 export function PropertyStepper() {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const auth = useAuth();
@@ -96,29 +100,22 @@ export function PropertyStepper() {
       let validationResult;
       switch (step) {
         case 0:
-          console.log("Current Step: ", currentStep);
 
           validationResult = basicInfoSchema.safeParse(formData.basicInfo);
           break;
         case 1:
-          console.log("Current Step: ", currentStep);
 
           validationResult = legalInfoSchema.safeParse(formData.legalInfo);
           break;
         case 2:
-          console.log("Current Step: ", currentStep);
 
           validationResult = locationInfoSchema.safeParse(formData.locationInfo);
           break;
         case 3:
-          console.log("Current Step: ", currentStep);
 
           validationResult = lotsInfoSchema.safeParse(formData.lotsInfo);
-          console.log("formData.lotsInfo: ", formData.lotsInfo);
-          console.log("Validation result: ", validationResult);
           break;
         default:
-          console.log("Current Step: ", currentStep);
           return true;
       }
 
@@ -170,10 +167,11 @@ export function PropertyStepper() {
         title: "Error",
         description: "Por favor corrija los errores antes de continuar",
         variant: "destructive",
+        duration: 3000,
       });
       return;
     }
-
+    setLoading(true);
     try {
       const { user } = auth;
       const token = user?.token || "";
@@ -213,32 +211,25 @@ export function PropertyStepper() {
       Array.from(formData.legalInfo.documents).forEach(file => {
         formDataToSend.append('documents', file);
       });
-      const response = await fetch('http://localhost:7777/property', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formDataToSend,
-      });
-      if (!response.ok) {
-        throw new Error(`Error del servidor: ${response.statusText}`);
-      }
-
+      const response = await addProperty(formDataToSend, token);
       const data = await response.json();
-      const responseElement = document.getElementById('response');
-      if (responseElement) {
-        responseElement.textContent = JSON.stringify(data, null, 2);
-      }
       toast({
         title: "Éxito",
         description: "La propiedad fue guardada correctamente.",
+        duration: 3000,
       });
+      setLoading(false);
+      router.push(`/marketplace/${data.id}`);
+
     } catch (error: any) {
       console.error("Error al guardar la propiedad:", error);
+      setLoading(false);
+
       toast({
         title: "Error",
-        description: error.message || "Hubo un error al guardar la propiedad.",
+        description: (error.message || "Hubo un error al guardar la propiedad.") + " Por favor, inténtalo de nuevo más tarde.",
         variant: "destructive",
+        duration: 3000,
       });
     }
   };

@@ -18,9 +18,13 @@ export function PropertyLegalInfo({ property }: PropertyLegalInfoProps) {
           <div>
             <h3 className="font-semibold mb-2">Documentación</h3>
             <ul className="list-disc list-inside text-muted-foreground">
-              <li>Título de propiedad verificado</li>
-              <li>Planos catastrales</li>
-              <li>Certificado de zonificación</li>
+              {property.documents.map((document, index) => (
+                <li key={index}>
+                  <a href={document.url} target="_blank" rel="noreferrer">
+                    {document.name}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

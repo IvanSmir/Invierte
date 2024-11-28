@@ -46,6 +46,7 @@ export function RegisterForm() {
       toast({
         title: "¡Registro exitoso!",
         description: "Tu cuenta ha sido creada correctamente",
+        duration: 3000,
       });
       router.push("/marketplace");
     } catch (error) {
@@ -53,12 +54,13 @@ export function RegisterForm() {
         title: "Error",
         description: "Hubo un problema al crear tu cuenta",
         variant: "destructive",
+        duration: 3000,
       });
     } finally {
       setIsLoading(false);
     }
   };
- 
+
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
       <div className="space-y-2">
