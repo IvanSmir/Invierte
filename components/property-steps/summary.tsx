@@ -108,16 +108,16 @@ export function Summary({ data }: SummaryProps) {
         <CardContent>
           <dl className="space-y-2">
             <dt className="font-medium">Cantidad de Lotes</dt>
-            <dd className="text-muted-foreground">{data.lotsInfo.totalLots}</dd>
+            <dd className="text-muted-foreground">{data.lotsInfo.lots.length}</dd>
 
             <dt className="font-medium mt-4">Precio por Lote</dt>
             <dd className="text-muted-foreground">
-              ${data.lotsInfo.pricePerLot.toLocaleString()}
+              ${data.lotsInfo.lots[0].price.toLocaleString()}
             </dd>
 
             <dt className="font-medium mt-4">Valor Total</dt>
             <dd className="text-muted-foreground">
-              ${(data.lotsInfo.totalLots * data.lotsInfo.pricePerLot).toLocaleString()}
+              ${(data.lotsInfo.lots.length * data.lotsInfo.lots[0].price).toLocaleString()}
             </dd>
           </dl>
         </CardContent>

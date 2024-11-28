@@ -96,18 +96,28 @@ export function PropertyStepper() {
       let validationResult;
       switch (step) {
         case 0:
+          console.log("Current Step: ", currentStep);
+
           validationResult = basicInfoSchema.safeParse(formData.basicInfo);
           break;
         case 1:
+          console.log("Current Step: ", currentStep);
+
           validationResult = legalInfoSchema.safeParse(formData.legalInfo);
           break;
         case 2:
+          console.log("Current Step: ", currentStep);
+
           validationResult = locationInfoSchema.safeParse(formData.locationInfo);
           break;
         case 3:
+          console.log("Current Step: ", currentStep);
+
           validationResult = lotsInfoSchema.safeParse(formData.lotsInfo);
           break;
         default:
+          console.log("Current Step: ", currentStep);
+
           return true;
       }
 
@@ -163,27 +173,50 @@ export function PropertyStepper() {
       return;
     }
 
-    try {
-      console.log("Form data:", formData);
-      const { user } = auth;
-      const token = user?.token || '';
-      const property = await addProperty(formData, token);
-      if (property) {
-        console.log("property agregado", property);
-        toast({
-          title: "¡Éxito!",
-          description: "El terreno se ha guardado correctamente",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo guardar el terreno",
-        variant: "destructive",
-      });
-    }
-  };
 
+  try {
+    const { user } = auth;
+    const token = user?.token || "";
+
+    const formDataToSend = new FormData();
+
+    // Añadir información básica
+    Object.entries(formData.basicInfo).forEach(([key, value]) => {
+      if (key === "images" && Array.isArray(value)) {
+        value.forEach((file) => formDataToSend.append("images", file));
+      } else {
+        formDataToSend.append(key, String(value));
+      }
+    });
+
+    // Añadir información legal
+    Object.entries(formData.legalInfo).forEach(([key, value]) => {
+      if (key === "documents" && Array.isArray(value)) {
+        value.forEach((file) => formDataToSend.append("documents", file));
+      } else {
+        formDataToSend.append(key, String(value));
+      }
+    });
+
+    // Añadir el resto de los datos
+    formDataToSend.append("locationInfo", JSON.stringify(formData.locationInfo));
+    formDataToSend.append("lotsInfo", JSON.stringify(formData.lotsInfo));
+
+    // Enviar solicitud
+    await addProperty(formDataToSend, token);
+
+    toast({
+      title: "Éxito",
+      description: "La propiedad fue guardada correctamente.",
+    });
+  } catch (error: any) {
+    toast({
+      title: "Error",
+      description: error.message || "Hubo un error al guardar la propiedad.",
+      variant: "destructive",
+    });
+  }
+  };
   const renderStep = () => {
     switch (currentStep) {
       case 0:
@@ -213,15 +246,12 @@ export function PropertyStepper() {
         );
       case 3:
         return (
-<<<<<<< HEAD
           <LotsInfo
-            data={formData.lotsInfo}
-            onUpdate={(data) => updateFormData("lotsInfo", data)}
-            errors={errors}
-            location = {formData.locationInfo.coordinates}
-=======
-          <LotsInfo data={formData.lotsInfo} location={formData.locationInfo.coordinates} onUpdate={(data) => updateFormData("lotsInfo", data)} errors={errors}
->>>>>>> 3a892b6ff0fb5127a57ff6a83c0f52333c7ff566
+           
+            data={formData.lotsInfo} 
+            location={formData.locationInfo.coordinates}
+             onUpdate={(data) => updateFormData("lotsInfo", data)} 
+             errors={errors}
           />
         );
       case 4:
