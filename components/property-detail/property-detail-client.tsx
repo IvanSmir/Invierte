@@ -25,7 +25,7 @@ const PropertyMap = dynamic(() => import("@/components/property-map"), {
 });
 
 interface PropertyDetailClientProps {
-  propertyId: string;
+  propertyId: string | string[] | undefined;
 }
 
 export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) {
@@ -36,9 +36,8 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
   const { toast } = useToast();
   const router = useRouter();
   const fetchProperty = async () => {
-    const auth = useAuth();
-    const token = auth.user?.token || "";
-    const data = await getPropertyById(propertyId, token);
+    const token = user?.token || "";
+    const data = await getPropertyById(propertyId as string, token);
     setProperty(data);
   };
   const handleLotSelect = (lot: Lot) => {
@@ -56,12 +55,14 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
       setSelectedLot(lot);
     }
   };
-  if (!property) {
-    return <div>Cargando...</div>; // O algún otro componente de carga
-  }
   useEffect(() => {
     fetchProperty();
   }, []);
+
+  if (!property) {
+    return <div>Cargando...</div>; // O algún otro componente de carga
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <PropertyHeader property={property} />
@@ -73,7 +74,7 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
           <div className="h-[500px] relative rounded-lg overflow-hidden border bg-background">
             <div className="absolute inset-0">
               <PropertyMap
-                center={[property.latitude, property.longitude]}
+                center={[property.coordinates[0][0], property.coordinates[0][1]]}
                 zoom={15}
                 property={property}
                 onLotSelect={handleLotSelect}

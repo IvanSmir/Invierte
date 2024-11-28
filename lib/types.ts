@@ -15,8 +15,7 @@ export interface Property {
   size: number;
   type: string;
   location: string;
-  latitude: number;
-  longitude: number;
+  coordinates: [[number, number]];
   propertyNumber: string;
   registryInfo: string;
   departmentId: string;
