@@ -37,7 +37,7 @@ interface Neighborhood {
 interface BasicInfoData {
   name: string;
   description: string;
-  images: string[];
+  images: File[];
   departmentId: string;
   departmentLocation: {
     lat: number;
@@ -47,6 +47,7 @@ interface BasicInfoData {
   neighborhoodId?: string;
   address: string;
 }
+
 
 interface BasicInfoProps {
   data: BasicInfoData;

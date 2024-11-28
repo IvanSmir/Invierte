@@ -74,12 +74,12 @@ export function PropertyStepper() {
           number: "",
           area: 0,
           status: "available",
-          coordinates:[[0,0]],
-    },
+          coordinates: [[0, 0]],
+        },
       ],
     }
   });
- 
+
 
   const { toast } = useToast();
 
@@ -164,7 +164,7 @@ export function PropertyStepper() {
 
   const handleSubmit = async () => {
     const allStepsValid = [0, 1, 2, 3].every(step => validateStep(step));
-  
+
     if (!allStepsValid) {
       toast({
         title: "Error",
@@ -173,16 +173,16 @@ export function PropertyStepper() {
       });
       return;
     }
-  
+
     try {
       const { user } = auth;
       const token = user?.token || "";
-  
+
       const propertyData = {
         name: formData.basicInfo.name,
         description: formData.basicInfo.description,
         price: formData.lotsInfo.lots.reduce((sum, lot) => sum + lot.price, 0), //precio totalxd
-        size: formData.lotsInfo.lots.reduce((sum, lot) => sum + lot.area, 0), 
+        size: formData.lotsInfo.lots.reduce((sum, lot) => sum + lot.area, 0),
         type: "Residencial",
         location: formData.basicInfo.address,
         coordinates: formData.locationInfo.coordinates,
@@ -201,20 +201,18 @@ export function PropertyStepper() {
           coordinates: lot.coordinates,
         })),
       };
-  
+
       const formDataToSend = new FormData();
-  
+
       formDataToSend.append('createPropertyDto', JSON.stringify(propertyData));
-  
 
-    formData.basicInfo.images.forEach((file) => {
-      formDataToSend.append("images", file);
-    });
 
-    formData.legalInfo.documents.forEach((file) => {
-      formDataToSend.append("documents", file);
-    });
-
+      Array.from(formData.basicInfo.images).forEach(file => {
+        formDataToSend.append('images', file);
+      });
+      Array.from(formData.legalInfo.documents).forEach(file => {
+        formDataToSend.append('documents', file);
+      });
       const response = await fetch('http://localhost:7777/property', {
         method: 'POST',
         headers: {
@@ -222,10 +220,10 @@ export function PropertyStepper() {
         },
         body: formDataToSend,
       });
-        if (!response.ok) {
+      if (!response.ok) {
         throw new Error(`Error del servidor: ${response.statusText}`);
       }
-  
+
       const data = await response.json();
       const responseElement = document.getElementById('response');
       if (responseElement) {
@@ -274,11 +272,11 @@ export function PropertyStepper() {
       case 3:
         return (
           <LotsInfo
-           
-            data={formData.lotsInfo} 
+
+            data={formData.lotsInfo}
             location={formData.locationInfo.coordinates}
-             onUpdate={(data) => updateFormData("lotsInfo", data)} 
-             errors={errors}
+            onUpdate={(data) => updateFormData("lotsInfo", data)}
+            errors={errors}
           />
         );
       case 4:

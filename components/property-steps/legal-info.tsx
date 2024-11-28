@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 interface LegalInfoData {
   propertyNumber: string;
   registryInfo: string;
-  documents: string[];
+  documents: File[];
 }
 
 interface LegalInfoProps {

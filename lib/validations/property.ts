@@ -7,7 +7,7 @@ export const basicInfoSchema = z.object({
     .min(10, "La descripción debe tener al menos 10 caracteres")
     .max(500, "La descripción no puede exceder los 500 caracteres"),
   images: z
-    .array(z.string())
+    .array(z.any()) // Cambiado para aceptar archivos en lugar de strings
     .min(1, "Debe agregar al menos una imagen")
     .max(10, "No puede agregar más de 10 imágenes"),
   departmentId: z.string().min(1, "Debe seleccionar un departamento"),
@@ -36,7 +36,7 @@ export const legalInfoSchema = z.object({
       "La información de registro no puede exceder los 1000 caracteres"
     ),
   documents: z
-    .array(z.string())
+    .array(z.any()) // Cambiado para aceptar archivos en lugar de strings
     .min(1, "Debe adjuntar al menos un documento")
     .max(5, "No puede adjuntar más de 5 documentos"),
 });
