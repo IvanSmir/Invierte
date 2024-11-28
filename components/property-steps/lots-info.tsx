@@ -23,37 +23,64 @@ interface PropertyMapProps {
   onDrawCreated?: (type: string, coordinates: [number, number][]) => void;
   drawPolygon: boolean; // Flag to enable drawing polygons
 }
+interface LotsInfoProperties {
+  data: {
+    lots: Array<{
+      number: string;
+      price: number;
+      area: number;
+      status: "available" | "sold" | "reserved";
+      coordinates: [[number, number], ...[number, number][]]; // Permite múltiples coordenadas
+    }>;
+  };
+  location:  [number, number][];
+  onUpdate: (data: any) => void;
+  errors?: Record<string, string[]>;
+}
 
-export function LotsInfo() {
+
+export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProperties) {
+  
   const mapRef = useRef(null);
   const [map, setMap] = useState<L.Map | null>(null);
   const [drawnItems, setDrawnItems] = useState(new L.FeatureGroup());
-  const [originalPolygon, setOriginalPolygon] = useState<L.Polygon | null>(null);
+  const [originalPolygon, setOriginalPolygon] = useState<L.Polygon | null>();
   const [orientationLine, setOrientationLine] = useState<L.Polyline | null>(null);
   const [divisions, setDivisions] = useState<L.Layer[]>([]);
   const [rotationAngle, setRotationAngle] = useState(0);
 
 
   useEffect(() => {
-
+    console.log(location)
     if (!mapRef.current) return;
-
+  
     const initialMap = L.map(mapRef.current, {
       center: [41.4036, 2.1744],
       zoom: 18,
     });
-
+  
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap contributors',
     }).addTo(initialMap);
-
-    setMap(initialMap); // Set the map state
-
+  
+    setMap(initialMap);
+  
     const drawnLayer = new L.FeatureGroup();
     initialMap.addLayer(drawnLayer);
     setDrawnItems(drawnLayer);
-
+  
+    if (location && location.length > 2) {
+      const polygon = L.polygon(location, {
+        color: '#3388ff',
+        weight: 2,
+      }).addTo(initialMap);
+  
+      setOriginalPolygon(polygon); 
+  
+      initialMap.fitBounds(polygon.getBounds());
+    }
+  
     const drawControl = new L.Control.Draw({
       draw: {
         polygon: {
@@ -80,11 +107,11 @@ export function LotsInfo() {
       },
     });
     initialMap.addControl(drawControl);
-
-    initialMap.on('draw:created', (e: L.LeafletEvent) => {  // Use L.LeafletEvent
-      const layer = (e as any).layer;  // Access the layer from the event
-      const layerType = (e as any).layerType;  // Access layerType manually
-
+  
+    initialMap.on('draw:created', (e: L.LeafletEvent) => {
+      const layer = (e as any).layer; 
+      const layerType = (e as any).layerType;
+  
       if (layerType === 'polyline') {
         if (orientationLine) {
           initialMap.removeLayer(orientationLine);
@@ -98,14 +125,15 @@ export function LotsInfo() {
         setOriginalPolygon(layer);
         showArea(turf.area(layer.toGeoJSON()));
       }
-
+  
       drawnLayer.addLayer(layer);
     });
-
+  
     return () => {
       initialMap.remove();
     };
-  }, []);
+  }, [location]);
+  
 
   const calculateOrientation = (line: L.Polyline) => {
     const coords = line.getLatLngs() as L.LatLng[];
@@ -195,7 +223,7 @@ export function LotsInfo() {
     divisions.forEach(layer => layer.remove());
     setDivisions([]);
   };
-
+  
   const clearMap = () => {
     originalPolygon?.remove();
     orientationLine?.remove();
@@ -242,9 +270,9 @@ export function LotsInfo() {
           <input type="number" id="horizontalDivisions" defaultValue={2} min={1} max={20} />
           <button onClick={() => divideTerrain(2, 2)}>Aplicar Divisiones</button>
         </div>
-        <button onClick={clearMap} style={{ backgroundColor: '#dc3545' }}>
+        {/* <button onClick={clearMap} style={{ backgroundColor: '#dc3545' }}>
           Limpiar Mapa
-        </button>
+        </button> */}
       </div>
       <div ref={mapRef} style={{ height: '700px', width: '100%' }}></div>
     </div>
