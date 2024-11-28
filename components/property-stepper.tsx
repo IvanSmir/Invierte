@@ -213,11 +213,15 @@ export function PropertyStepper() {
         );
       case 3:
         return (
+<<<<<<< HEAD
           <LotsInfo
             data={formData.lotsInfo}
             onUpdate={(data) => updateFormData("lotsInfo", data)}
             errors={errors}
             location = {formData.locationInfo.coordinates}
+=======
+          <LotsInfo data={formData.lotsInfo} location={formData.locationInfo.coordinates} onUpdate={(data) => updateFormData("lotsInfo", data)} errors={errors}
+>>>>>>> 3a892b6ff0fb5127a57ff6a83c0f52333c7ff566
           />
         );
       case 4:
