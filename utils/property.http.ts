@@ -26,15 +26,21 @@ export const getProperty = async ( token: string, queryParams: any) => {
 
 export const getPropertyById = async (id: string, token: string) => {
   try {
-    const data = await getProperty(token, {
-      page: 1,
-      limit: 20,
-      departmentId: "3",
-      cityId: "5",
-      neighborhoodId: "8",
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
     });
-  }
-catch (error: any) {
+
+    if (!response.ok) {
+      throw new Error("Error al obtener Propiedad");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
     throw new Error((error as Error).message || "Error al obtener Propiedad");
   }
 };

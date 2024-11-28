@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/components/ui/use-toast";
@@ -13,6 +13,7 @@ import { PropertyLegalInfo } from "./property-legal-info";
 import { PropertyLotsInfo } from "./property-lots-info";
 import { PurchaseDialog } from "@/components/purchase-dialog";
 import dynamic from "next/dynamic";
+import { getPropertyById } from "@/utils/property.http";
 
 const PropertyMap = dynamic(() => import("@/components/property-map"), {
   ssr: false,
@@ -24,16 +25,22 @@ const PropertyMap = dynamic(() => import("@/components/property-map"), {
 });
 
 interface PropertyDetailClientProps {
-  property: Property;
+  propertyId: string;
 }
 
-export function PropertyDetailClient({ property }: PropertyDetailClientProps) {
+export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) {
+  const [property, setProperty] = useState<Property | null>(null);
   const [selectedLot, setSelectedLot] = useState<Lot | null>(null);
   const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
-
+  const fetchProperty = async () => {
+    const auth = useAuth();
+    const token = auth.user?.token || "";
+    const data = await getPropertyById(propertyId, token);
+    setProperty(data);
+  };
   const handleLotSelect = (lot: Lot) => {
     if (!user) {
       toast({
@@ -49,7 +56,12 @@ export function PropertyDetailClient({ property }: PropertyDetailClientProps) {
       setSelectedLot(lot);
     }
   };
-
+  if (!property) {
+    return <div>Cargando...</div>; // O algún otro componente de carga
+  }
+  useEffect(() => {
+    fetchProperty();
+  }, []);
   return (
     <div className="container mx-auto px-4 py-8">
       <PropertyHeader property={property} />
