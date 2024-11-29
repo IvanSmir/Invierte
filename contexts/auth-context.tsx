@@ -1,14 +1,13 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { loginHttp } from "@/utils/auth.http";
-import { registerHttp } from "@/utils/auth.http";
+import { loginHttp, registerHttp } from "@/utils/auth.http";
+
 interface User {
   id: string;
   fullName: string;
   email: string;
   token: string;
-
 }
 
 interface AuthContextType {
@@ -22,11 +21,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    setIsClient(true);
+    if (typeof window !== "undefined") {
+      const storedUser = window.localStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
     }
   }, []);
 
@@ -35,7 +38,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await loginHttp({ user: { email, password } });
       const { user, token } = response;
       setUser({ ...user, token });
-      localStorage.setItem("user", JSON.stringify({ ...user, token }));
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("user", JSON.stringify({ ...user, token }));
+      }
     } catch (error: any) {
       console.error("Error al iniciar sesión:", error);
       if (error?.message == "Credenciales inválidas") {
@@ -51,7 +56,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await registerHttp({ user: { fullName, email, password, confirmPassword } });
       const { user, token } = response;
       setUser({ ...user, token });
-      localStorage.setItem("user", JSON.stringify({ ...user, token }));
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("user", JSON.stringify({ ...user, token }));
+      }
     } catch (error) {
       console.error("Error al registrarse:", error);
       throw new Error("Error al registrarse");
@@ -60,8 +67,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user");
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem("user");
+    }
   };
+
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <AuthContext.Provider value={{ user, login, register, logout }}>

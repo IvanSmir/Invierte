@@ -2,6 +2,7 @@
 
 import { PropertyCard } from "@/components/property-card";
 import { useAuth } from "@/contexts/auth-context";
+import { Property } from "@/lib/types";
 import { getProperty, getPropertyById } from "@/utils/property.http";
 import { useEffect, useState } from "react";
 
