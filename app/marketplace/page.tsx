@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { PropertyGrid } from "@/components/property-grid";
 import { PropertyFilters } from "@/components/property-filters";
 import { PropertySort } from "@/components/property-sort";
+import MarketplaceLoading from "./loading";
 
 export default function MarketplacePage() {
   return (
@@ -19,7 +20,7 @@ export default function MarketplacePage() {
             <PropertySort />
           </div> */}
 
-      <Suspense fallback={<div>Cargando...</div>}>
+      <Suspense fallback={MarketplaceLoading()}>
         <PropertyGrid />
       </Suspense>
     </div>

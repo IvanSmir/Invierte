@@ -1,5 +1,6 @@
 "use client";
 
+import MarketplaceLoading from "@/app/marketplace/loading";
 import { PropertyCard } from "@/components/property-card";
 import { useAuth } from "@/contexts/auth-context";
 import { Property } from "@/lib/types";
@@ -12,9 +13,11 @@ export function PropertyGrid() {
   const auth = useAuth();
   const token = auth.user?.token || "";
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       setError(false);
       try {
         const queryParams = new URLSearchParams({
@@ -32,7 +35,7 @@ export function PropertyGrid() {
           console.error("La respuesta no contiene propiedades válidas:", data);
           setProperties([]);
         }
-
+        setLoading(false);
 
       } catch (error) {
         setError(true);
@@ -45,6 +48,10 @@ export function PropertyGrid() {
 
   if (error) {
     throw new Error("Error al obtener las propiedades");
+  }
+
+  if (loading) {
+    return MarketplaceLoading();
   }
 
   return (
