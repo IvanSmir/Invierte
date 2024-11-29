@@ -1,9 +1,8 @@
-import { useEffect } from  'react';
+import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polygon, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 
 // Leaflet icon settings
-delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
   iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
@@ -53,11 +52,11 @@ export default function Map() {
     [51.51, -0.1]    // D
   ];
 
-  const gridLines = createGrid(square, 4, 4); 
+  const gridLines = createGrid(square, 4, 4);
 
   return (
     <MapContainer id="map" center={[51.505, -0.09]} zoom={14} style={{ height: '100vh', width: '100%' }}>
-      <TileLayer 
+      <TileLayer
         url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
         attribution='&copy; <a href="https://www.esri.com">Esri</a> contributors'
       />
