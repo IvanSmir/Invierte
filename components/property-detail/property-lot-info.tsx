@@ -22,7 +22,6 @@ export function PropertyLotInfo({ selectedLot, onReserveClick }: PropertyLotInfo
       </Card>
     );
   }
-
   return (
     <Card>
       <CardContent className="p-4">
@@ -31,9 +30,15 @@ export function PropertyLotInfo({ selectedLot, onReserveClick }: PropertyLotInfo
           <p>Número: {selectedLot.number}</p>
           <p>Área: {selectedLot.area}m²</p>
           <p>Precio: {formatCurrency(selectedLot.price)}</p>
-          <Button className="w-full" onClick={onReserveClick}>
-            Reservar Lote
-          </Button>
+          {selectedLot.status === "available" ? (
+            <Button className="w-full" onClick={onReserveClick}>
+              Reservar Lote
+            </Button>
+          ) : (
+            <Button className="w-full" disabled>
+              Lote reservado
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
