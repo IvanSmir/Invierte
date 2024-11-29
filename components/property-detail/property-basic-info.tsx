@@ -1,12 +1,12 @@
 "use client";
 
-import { Property } from "@/lib/types";
+import { Image as ImageType, Property } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 
 interface PropertyBasicInfoProps {
   property: Property;
-  images: string[];
+  images: ImageType[];
 }
 
 export function PropertyBasicInfo({ property, images }: PropertyBasicInfoProps) {
@@ -17,11 +17,11 @@ export function PropertyBasicInfo({ property, images }: PropertyBasicInfoProps) 
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 gap-4">
-          {images.map((url, index) => (
-            <div key={index} className="relative aspect-video rounded-lg overflow-hidden">
+          {images.map((image) => (
+            <div key={image.id} className="relative aspect-video rounded-lg overflow-hidden">
               <Image
-                src={url}
-                alt={`${property.name} - Imagen ${index + 1}`}
+                src={image.url}
+                alt={`${property.name} - Imagen ${image.id}`}
                 fill
                 className="object-cover"
               />

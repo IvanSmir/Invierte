@@ -25,6 +25,7 @@ interface LocationInfoProps {
   location: {
     lat: number;
     long: number;
+    
   };
   onUpdate: (data: any) => void;
   errors?: Record<string, string[]>;

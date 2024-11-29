@@ -23,6 +23,7 @@ export function LoginForm() {
   const { login } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -39,14 +40,26 @@ export function LoginForm() {
       toast({
         title: "¡Bienvenido!",
         description: "Has iniciado sesión correctamente",
+        duration: 3000,
       });
       router.push("/marketplace");
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Hubo un problema al iniciar sesión",
-        variant: "destructive",
-      });
+    } catch (error: any) {
+      if (error?.message == "Credenciales inválidas") {
+        setError("Credenciales inválidas");
+        toast({
+          title: "Error",
+          description: "Credenciales inválidas",
+          variant: "destructive",
+          duration: 3000,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Hubo un problema al iniciar sesión",
+          variant: "destructive",
+          duration: 3000,
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -82,6 +95,11 @@ export function LoginForm() {
           </p>
         )}
       </div>
+      {error && (
+        <p className="text-sm text-destructive mt-2">
+          {error}
+        </p>
+      )}
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
       </Button>

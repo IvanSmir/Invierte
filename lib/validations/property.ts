@@ -7,7 +7,7 @@ export const basicInfoSchema = z.object({
     .min(10, "La descripción debe tener al menos 10 caracteres")
     .max(500, "La descripción no puede exceder los 500 caracteres"),
   images: z
-    .array(z.string())
+    .array(z.any()) // Cambiado para aceptar archivos en lugar de strings
     .min(1, "Debe agregar al menos una imagen")
     .max(10, "No puede agregar más de 10 imágenes"),
   departmentId: z.string().min(1, "Debe seleccionar un departamento"),
@@ -36,7 +36,7 @@ export const legalInfoSchema = z.object({
       "La información de registro no puede exceder los 1000 caracteres"
     ),
   documents: z
-    .array(z.string())
+    .array(z.any()) // Cambiado para aceptar archivos en lugar de strings
     .min(1, "Debe adjuntar al menos un documento")
     .max(5, "No puede adjuntar más de 5 documentos"),
 });
@@ -53,14 +53,18 @@ export const locationInfoSchema = z.object({
 });
 
 export const lotsInfoSchema = z.object({
-  totalLots: z
-    .number()
-    .min(1, "Debe tener al menos 1 lote")
-    .max(1000, "No puede exceder los 1000 lotes"),
-  pricePerLot: z
-    .number()
-    .min(1, "El precio debe ser mayor a 0")
-    .max(10000000, "El precio por lote no puede exceder los 10 millones"),
+  lots: z.array(
+    z.object({
+      number: z.string().nonempty("El número del lote es obligatorio"),
+      area: z.number().min(1, "El área debe ser mayor a 0"),
+      status: z.enum(["available", "sold", "reserved"]),
+      price: z.number().min(1, "El área debe ser mayor a 0"),
+      coordinates: z
+        .array(z.tuple([z.number(), z.number()]))
+        .min(3, "Debe tener al menos 3 coordenadas")
+        .nonempty("Las coordenadas son obligatorias"),
+    })
+  ),
 });
 
 export type BasicInfoValues = z.infer<typeof basicInfoSchema>;

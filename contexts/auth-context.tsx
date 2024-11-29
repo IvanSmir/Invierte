@@ -1,17 +1,20 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-
+import { loginHttp } from "@/utils/auth.http";
+import { registerHttp } from "@/utils/auth.http";
 interface User {
   id: string;
-  name: string;
+  fullName: string;
   email: string;
+  token: string;
+
 }
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (fullName: string, email: string, password: string, confirmPassword: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -28,31 +31,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    const mockUser = {
-      id: "1",
-      name: "Usuario Demo",
-      email,
-    };
-    
-    setUser(mockUser);
-    localStorage.setItem("user", JSON.stringify(mockUser));
+    try {
+      const response = await loginHttp({ user: { email, password } });
+      const { user, token } = response;
+      setUser({ ...user, token });
+      localStorage.setItem("user", JSON.stringify({ ...user, token }));
+    } catch (error: any) {
+      console.error("Error al iniciar sesión:", error);
+      if (error?.message == "Credenciales inválidas") {
+        throw new Error("Credenciales inválidas");
+      } else {
+        throw new Error("Error al iniciar sesión");
+      }
+    }
   };
 
-  const register = async (name: string, email: string, password: string) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    const newUser = {
-      id: Date.now().toString(),
-      name,
-      email,
-    };
-    
-    setUser(newUser);
-    localStorage.setItem("user", JSON.stringify(newUser));
+  const register = async (fullName: string, email: string, password: string, confirmPassword: string) => {
+    try {
+      const response = await registerHttp({ user: { fullName, email, password, confirmPassword } });
+      const { user, token } = response;
+      setUser({ ...user, token });
+      localStorage.setItem("user", JSON.stringify({ ...user, token }));
+    } catch (error) {
+      console.error("Error al registrarse:", error);
+      throw new Error("Error al registrarse");
+    }
   };
 
   const logout = () => {

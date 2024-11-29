@@ -1,13 +1,16 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Lot } from "@/lib/types";
 import Image from "next/image";
+import { FileIcon, ImageIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface SummaryData {
   basicInfo: {
     name: string;
     description: string;
-    images: string[];
+    images: File[];
     departmentId: string;
     cityId: string;
     neighborhoodId?: string;
@@ -16,15 +19,14 @@ interface SummaryData {
   legalInfo: {
     propertyNumber: string;
     registryInfo: string;
-    documents: string[];
+    documents: File[];
   };
   locationInfo: {
     coordinates: [number, number][];
     manualCoordinates: string;
   };
   lotsInfo: {
-    totalLots: number;
-    pricePerLot: number;
+    lots: Lot[];
   };
 }
 
@@ -33,6 +35,27 @@ interface SummaryProps {
 }
 
 export function Summary({ data }: SummaryProps) {
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const getFileIcon = (file: File) => {
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return 'PDF';
+      case 'doc':
+      case 'docx':
+        return 'DOC';
+      default:
+        return 'FILE';
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -40,29 +63,43 @@ export function Summary({ data }: SummaryProps) {
           <CardTitle>Información Básica</CardTitle>
         </CardHeader>
         <CardContent>
-          <dl className="space-y-2">
-            <dt className="font-medium">Nombre</dt>
-            <dd className="text-muted-foreground">{data.basicInfo.name}</dd>
+          <dl className="space-y-4">
+            <div>
+              <dt className="font-medium">Nombre</dt>
+              <dd className="text-muted-foreground mt-1">{data.basicInfo.name}</dd>
+            </div>
 
-            <dt className="font-medium mt-4">Descripción</dt>
-            <dd className="text-muted-foreground">{data.basicInfo.description}</dd>
+            <div>
+              <dt className="font-medium">Descripción</dt>
+              <dd className="text-muted-foreground mt-1">{data.basicInfo.description}</dd>
+            </div>
 
-            <dt className="font-medium mt-4">Dirección</dt>
-            <dd className="text-muted-foreground">{data.basicInfo.address}</dd>
+            <div>
+              <dt className="font-medium">Dirección</dt>
+              <dd className="text-muted-foreground mt-1">{data.basicInfo.address}</dd>
+            </div>
 
-            <dt className="font-medium mt-4">Imágenes</dt>
-            <dd className="grid grid-cols-3 gap-4 mt-2">
-              {data.basicInfo.images.map((url, index) => (
-                <div key={index} className="relative aspect-square">
-                  <Image
-                    src={url}
-                    alt={`Property image ${index + 1}`}
-                    fill
-                    className="object-cover rounded-lg"
-                  />
-                </div>
-              ))}
-            </dd>
+            <div>
+              <dt className="font-medium">Imágenes ({data.basicInfo.images.length})</dt>
+              <dd className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+                {data.basicInfo.images.map((file, index) => (
+                  <div key={index} className="relative group aspect-square">
+                    <Image
+                      src={URL.createObjectURL(file)}
+                      alt={`Imagen ${index + 1}`}
+                      fill
+                      className="object-cover rounded-lg"
+                    />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                      <div className="absolute bottom-2 left-2 right-2 text-white text-xs">
+                        <p className="truncate">{file.name}</p>
+                        <p>{formatFileSize(file.size)}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </dd>
+            </div>
           </dl>
         </CardContent>
       </Card>
@@ -72,17 +109,49 @@ export function Summary({ data }: SummaryProps) {
           <CardTitle>Información Legal</CardTitle>
         </CardHeader>
         <CardContent>
-          <dl className="space-y-2">
-            <dt className="font-medium">Número de Propiedad</dt>
-            <dd className="text-muted-foreground">{data.legalInfo.propertyNumber}</dd>
+          <dl className="space-y-4">
+            <div>
+              <dt className="font-medium">Número de Propiedad</dt>
+              <dd className="text-muted-foreground mt-1">{data.legalInfo.propertyNumber}</dd>
+            </div>
 
-            <dt className="font-medium mt-4">Información de Registro</dt>
-            <dd className="text-muted-foreground">{data.legalInfo.registryInfo}</dd>
+            <div>
+              <dt className="font-medium">Información de Registro</dt>
+              <dd className="text-muted-foreground mt-1">{data.legalInfo.registryInfo}</dd>
+            </div>
 
-            <dt className="font-medium mt-4">Documentos</dt>
-            <dd className="text-muted-foreground">
-              {data.legalInfo.documents.length} documentos adjuntos
-            </dd>
+            <div>
+              <dt className="font-medium">Documentos ({data.legalInfo.documents.length})</dt>
+              <dd className="mt-2 space-y-2">
+                {data.legalInfo.documents.map((file, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-2 bg-muted rounded-lg"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="bg-primary/10 text-primary px-2 py-1 rounded text-xs">
+                        {getFileIcon(file)}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm truncate max-w-[200px]">
+                          {file.name}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {formatFileSize(file.size)}
+                        </span>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => window.open(URL.createObjectURL(file))}
+                    >
+                      Ver
+                    </Button>
+                  </div>
+                ))}
+              </dd>
+            </div>
           </dl>
         </CardContent>
       </Card>
@@ -93,9 +162,13 @@ export function Summary({ data }: SummaryProps) {
         </CardHeader>
         <CardContent>
           <dl className="space-y-2">
-            <dt className="font-medium">Coordenadas</dt>
-            <dd className="text-muted-foreground">
-              {data.locationInfo.coordinates.length} puntos marcados
+            <dt className="font-medium">Coordenadas ({data.locationInfo.coordinates.length} puntos)</dt>
+            <dd className="text-muted-foreground mt-1">
+              {data.locationInfo.coordinates.map(([lat, lng], index) => (
+                <div key={index} className="text-sm">
+                  Punto {index + 1}: {lat.toFixed(6)}, {lng.toFixed(6)}
+                </div>
+              ))}
             </dd>
           </dl>
         </CardContent>
@@ -106,20 +179,48 @@ export function Summary({ data }: SummaryProps) {
           <CardTitle>Información de Lotes</CardTitle>
         </CardHeader>
         <CardContent>
-          <dl className="space-y-2">
-            <dt className="font-medium">Cantidad de Lotes</dt>
-            <dd className="text-muted-foreground">{data.lotsInfo.totalLots}</dd>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <dt className="font-medium">Cantidad de Lotes</dt>
+                <dd className="text-muted-foreground mt-1">
+                  {data.lotsInfo.lots.length}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-medium">Valor Total</dt>
+                <dd className="text-muted-foreground mt-1">
+                  ${data.lotsInfo.lots.reduce((sum, lot) => sum + lot.price, 0).toLocaleString()}
+                </dd>
+              </div>
+            </div>
 
-            <dt className="font-medium mt-4">Precio por Lote</dt>
-            <dd className="text-muted-foreground">
-              ${data.lotsInfo.pricePerLot.toLocaleString()}
-            </dd>
-
-            <dt className="font-medium mt-4">Valor Total</dt>
-            <dd className="text-muted-foreground">
-              ${(data.lotsInfo.totalLots * data.lotsInfo.pricePerLot).toLocaleString()}
-            </dd>
-          </dl>
+            <div className="mt-4">
+              <h3 className="font-medium mb-2">Detalle de Lotes</h3>
+              <div className="space-y-2">
+                {data.lotsInfo.lots.map((lot, index) => (
+                  <div key={index} className="bg-muted p-3 rounded-lg">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <span className="text-sm font-medium">Lote {lot.number}</span>
+                        <p className="text-sm text-muted-foreground">
+                          Área: {lot.area}m²
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-sm font-medium">
+                          ${lot.price.toLocaleString()}
+                        </span>
+                        <p className="text-sm text-muted-foreground">
+                          Estado: {lot.status}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

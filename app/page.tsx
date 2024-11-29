@@ -2,8 +2,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MapPin, ArrowRight, Shield, Search, Award } from "lucide-react";
+import FirstProperty from "@/components/firts-property";
+
 
 export default function Home() {
+
   return (
     <>
       <section className="relative py-20 md:py-32 overflow-hidden">
@@ -68,45 +71,9 @@ export default function Home() {
       </section>
 
       {/* Obtener Propiedad de la API */}
-      <section className="py-20">
-        <div className="container max-w-6xl mx-auto px-4">
-          <div className="flex justify-between items-center mb-12">
-            <h2 className="text-3xl font-bold">Terrenos Destacados</h2>
-            <Button variant="outline" asChild>
-              <Link href="/marketplace">
-                Ver todos
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="overflow-hidden">
-                <div className="aspect-[4/3] relative">
-                  <img
-                    src={`https://images.unsplash.com/photo-151${i}382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80`}
-                    alt={`Terreno destacado ${i}`}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center text-muted-foreground mb-2">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    <span>Ubicación {i}</span>
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">Terreno Premium {i}</h3>
-                  <p className="text-2xl font-bold text-primary">$150,000</p>
-                  <div className="mt-4 flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">500m²</span>
-                    <Button variant="outline" size="sm">Ver detalles</Button>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+
+      <FirstProperty />
 
       {/* CTA Section */}
       <section className="py-20 bg-primary text-primary-foreground">

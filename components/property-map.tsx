@@ -69,7 +69,6 @@ export default function PropertyMap({
       shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
     });
   }, []);
-
   return (
     <MapContainer
       center={center}
@@ -87,7 +86,7 @@ export default function PropertyMap({
       {property?.lots?.map((lot) => (
         <Polygon
           key={lot.id}
-          positions={lot.coordinates}
+          positions={lot.coordinates.map((coord) => [coord[1], coord[0]])}
           pathOptions={{
             color: getStatusColor(lot.status),
             fillColor: getStatusColor(lot.status),
@@ -102,6 +101,7 @@ export default function PropertyMap({
               <h3 className="font-semibold">Lote {lot.number}</h3>
               <div className="text-sm space-y-1">
                 <p>Área: {lot.area}m²</p>
+
                 <p>Precio: {formatCurrency(lot.price)}</p>
                 <p className="capitalize">Estado: {lot.status}</p>
               </div>
