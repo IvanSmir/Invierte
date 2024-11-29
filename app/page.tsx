@@ -9,14 +9,12 @@ export default function Home() {
 
   return (
     <>
-      <section className="relative py-20 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2532&q=80')] bg-cover bg-center">
+      <section className="relative  py-20 md:py-32 overflow-hidden h-96 ">
+        <div className="absolute  inset-0 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2532&q=80')] bg-cover bg-center">
           <div className="absolute inset-0 bg-black/60" />
-        </div>
-
-        <div className="container max-w-6xl mx-auto px-4">
+        <div className="absolute inset-0 container  max-w-6xl mx-auto px-4">
           <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+            <h1 className="py-5 text-4xl md:text-6xl font-bold text-white mb-6">
               Encuentra el terreno perfecto para tu próximo proyecto
             </h1>
             <p className="text-xl text-white/80 mb-8">
@@ -29,6 +27,7 @@ export default function Home() {
               </Link>
             </Button>
           </div>
+        </div>
         </div>
       </section>
 
