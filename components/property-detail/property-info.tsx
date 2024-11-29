@@ -25,7 +25,7 @@ export function PropertyInfo({ property }: PropertyInfoProps) {
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <Ruler className="h-4 w-4 mr-2" />
-              <span>{property.size} m²</span>
+              <span>{property.size.toFixed(2)} m²</span>
             </div>
             <Badge variant="secondary">{property.type}</Badge>
           </div>

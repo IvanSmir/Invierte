@@ -36,7 +36,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
         <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center">
             <Ruler className="h-4 w-4 mr-1" />
-            <span>{property.size} m²</span>
+            <span>{property.size.toFixed(2)} m²</span>
           </div>
           <div className="flex items-center">
             <Trees className="h-4 w-4 mr-1" />
