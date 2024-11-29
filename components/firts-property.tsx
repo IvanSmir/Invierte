@@ -68,7 +68,7 @@ export default function FirstProperty() {
                                 <h3 className="text-xl font-semibold mb-2">{i.name}</h3>
                                 <p className="text-2xl font-bold text-primary">{i.price} US$</p>
                                 <div className="mt-4 flex justify-between items-center">
-                                    <span className="text-sm text-muted-foreground">{i.size}m²</span>
+                                    <span className="text-sm text-muted-foreground">{i.size.toFixed(2)} m²</span>
                                     <Link href={`/marketplace/${i.id}`}>
                                         <Button variant="outline" size="sm">Ver detalles</Button>
                                     </Link>
