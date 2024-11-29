@@ -2,7 +2,6 @@
 
 import { PropertyCard } from "@/components/property-card";
 import { useAuth } from "@/contexts/auth-context";
-import { mockProperties, Property } from "@/lib/mock-data";
 import { getProperty, getPropertyById } from "@/utils/property.http";
 import { useEffect, useState } from "react";
 
