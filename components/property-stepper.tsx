@@ -212,14 +212,13 @@ export function PropertyStepper() {
         formDataToSend.append('documents', file);
       });
       const response = await addProperty(formDataToSend, token);
-      const data = await response.json();
       toast({
         title: "Éxito",
         description: "La propiedad fue guardada correctamente.",
         duration: 3000,
       });
       setLoading(false);
-      router.push(`/marketplace/${data.id}`);
+      router.push(`/marketplace/${response.id}`);
 
     } catch (error: any) {
       console.error("Error al guardar la propiedad:", error);
