@@ -65,7 +65,7 @@ export default function FirstProperty() {
                                     <MapPin className="h-4 w-4 mr-2" />
                                     <span>Ubicación {i.location}</span>
                                 </div>
-                                <h3 className="text-xl font-semibold mb-2">Terreno Premium {i.name}</h3>
+                                <h3 className="text-xl font-semibold mb-2">{i.name}</h3>
                                 <p className="text-2xl font-bold text-primary">{i.price} US$</p>
                                 <div className="mt-4 flex justify-between items-center">
                                     <span className="text-sm text-muted-foreground">{i.size}m²</span>
