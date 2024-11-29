@@ -10,6 +10,9 @@ import { LotsInfo } from "@/components/property-steps/lots-info";
 import { Summary } from "@/components/property-steps/summary";
 import { useToast } from "@/components/ui/use-toast";
 import { Steps } from "@/components/steps";
+import { addProperty } from "@/utils/property.http";
+import { User } from "@/lib/types/auth";
+
 import {
   basicInfoSchema,
   legalInfoSchema,
@@ -20,6 +23,9 @@ import {
   type LocationInfoValues,
   type LotsInfoValues,
 } from "@/lib/validations/property";
+import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
+import { set } from "zod";
 
 const steps = [
   { title: "Información Básica", description: "Nombre, descripción y fotos" },
@@ -37,8 +43,11 @@ interface FormData {
 }
 
 export function PropertyStepper() {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const auth = useAuth();
   const [formData, setFormData] = useState<FormData>({
     basicInfo: {
       name: "",
@@ -63,10 +72,18 @@ export function PropertyStepper() {
       manualCoordinates: "",
     },
     lotsInfo: {
-      totalLots: 0,
-      pricePerLot: 0,
-    },
+      lots: [
+        {
+          price: 0,
+          number: "",
+          area: 0,
+          status: "available",
+          coordinates: [[0, 0]],
+        },
+      ],
+    }
   });
+
 
   const { toast } = useToast();
 
@@ -83,15 +100,19 @@ export function PropertyStepper() {
       let validationResult;
       switch (step) {
         case 0:
+
           validationResult = basicInfoSchema.safeParse(formData.basicInfo);
           break;
         case 1:
+
           validationResult = legalInfoSchema.safeParse(formData.legalInfo);
           break;
         case 2:
+
           validationResult = locationInfoSchema.safeParse(formData.locationInfo);
           break;
         case 3:
+
           validationResult = lotsInfoSchema.safeParse(formData.lotsInfo);
           break;
         default:
@@ -146,25 +167,72 @@ export function PropertyStepper() {
         title: "Error",
         description: "Por favor corrija los errores antes de continuar",
         variant: "destructive",
+        duration: 3000,
       });
       return;
     }
-
+    setLoading(true);
     try {
-      console.log("Form data:", formData);
-      toast({
-        title: "¡Éxito!",
-        description: "El terreno se ha guardado correctamente",
+      const { user } = auth;
+      const token = user?.token || "";
+
+      const propertyData = {
+        name: formData.basicInfo.name,
+        description: formData.basicInfo.description,
+        price: formData.lotsInfo.lots.reduce((sum, lot) => sum + lot.price, 0), //precio totalxd
+        size: formData.lotsInfo.lots.reduce((sum, lot) => sum + lot.area, 0),
+        type: "Residencial",
+        location: formData.basicInfo.address,
+        coordinates: formData.locationInfo.coordinates,
+        propertyNumber: formData.legalInfo.propertyNumber,
+        registryInfo: formData.legalInfo.registryInfo,
+        departmentId: formData.basicInfo.departmentId,
+        cityId: formData.basicInfo.cityId,
+        neighborhoodId: formData.basicInfo.neighborhoodId || '',
+        address: formData.basicInfo.address,
+        manualCoordinates: formData.locationInfo.manualCoordinates || "",
+        lots: formData.lotsInfo.lots.map(lot => ({
+          number: lot.number,
+          area: lot.area,
+          price: lot.price,
+          status: lot.status,
+          coordinates: lot.coordinates,
+        })),
+      };
+
+      const formDataToSend = new FormData();
+
+      formDataToSend.append('createPropertyDto', JSON.stringify(propertyData));
+
+
+      Array.from(formData.basicInfo.images).forEach(file => {
+        formDataToSend.append('images', file);
       });
-    } catch (error) {
+      Array.from(formData.legalInfo.documents).forEach(file => {
+        formDataToSend.append('documents', file);
+      });
+      const response = await addProperty(formDataToSend, token);
+      const data = await response.json();
+      toast({
+        title: "Éxito",
+        description: "La propiedad fue guardada correctamente.",
+        duration: 3000,
+      });
+      setLoading(false);
+      router.push(`/marketplace/${data.id}`);
+
+    } catch (error: any) {
+      console.error("Error al guardar la propiedad:", error);
+      setLoading(false);
+
       toast({
         title: "Error",
-        description: "No se pudo guardar el terreno",
+        description: (error.message || "Hubo un error al guardar la propiedad.") + " Por favor, inténtalo de nuevo más tarde.",
         variant: "destructive",
+        duration: 3000,
       });
     }
   };
-
   const renderStep = () => {
     switch (currentStep) {
       case 0:
@@ -195,7 +263,9 @@ export function PropertyStepper() {
       case 3:
         return (
           <LotsInfo
+
             data={formData.lotsInfo}
+            location={formData.locationInfo.coordinates}
             onUpdate={(data) => updateFormData("lotsInfo", data)}
             errors={errors}
           />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/components/ui/use-toast";
@@ -13,6 +13,8 @@ import { PropertyLegalInfo } from "./property-legal-info";
 import { PropertyLotsInfo } from "./property-lots-info";
 import { PurchaseDialog } from "@/components/purchase-dialog";
 import dynamic from "next/dynamic";
+import { getPropertyById } from "@/utils/property.http";
+import PropertyLoading from "@/app/marketplace/[id]/loading";
 
 const PropertyMap = dynamic(() => import("@/components/property-map"), {
   ssr: false,
@@ -24,22 +26,28 @@ const PropertyMap = dynamic(() => import("@/components/property-map"), {
 });
 
 interface PropertyDetailClientProps {
-  property: Property;
+  propertyId: string | string[] | undefined;
 }
 
-export function PropertyDetailClient({ property }: PropertyDetailClientProps) {
+export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) {
+  const [property, setProperty] = useState<Property | null>(null);
   const [selectedLot, setSelectedLot] = useState<Lot | null>(null);
   const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
-
+  const fetchProperty = async () => {
+    const token = user?.token || "";
+    const data = await getPropertyById(propertyId as string, token);
+    setProperty(data);
+  };
   const handleLotSelect = (lot: Lot) => {
     if (!user) {
       toast({
         title: "Acceso denegado",
         description: "Debes iniciar sesión para seleccionar un lote",
         variant: "destructive",
+        duration: 3000,
       });
       router.push("/auth");
       return;
@@ -49,6 +57,16 @@ export function PropertyDetailClient({ property }: PropertyDetailClientProps) {
       setSelectedLot(lot);
     }
   };
+  const handleReservationComplete = () => {
+    fetchProperty(); // Recargar los datos de la propiedad
+  };
+  useEffect(() => {
+    fetchProperty();
+  }, []);
+
+  if (!property) {
+    return PropertyLoading();
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -61,7 +79,7 @@ export function PropertyDetailClient({ property }: PropertyDetailClientProps) {
           <div className="h-[500px] relative rounded-lg overflow-hidden border bg-background">
             <div className="absolute inset-0">
               <PropertyMap
-                center={[property.latitude, property.longitude]}
+                center={[property.coordinates[0][0], property.coordinates[0][1]]}
                 zoom={15}
                 property={property}
                 onLotSelect={handleLotSelect}
@@ -100,6 +118,7 @@ export function PropertyDetailClient({ property }: PropertyDetailClientProps) {
           lot={selectedLot}
           open={purchaseDialogOpen}
           onOpenChange={setPurchaseDialogOpen}
+          onReservationComplete={handleReservationComplete}
         />
       )}
     </div>
