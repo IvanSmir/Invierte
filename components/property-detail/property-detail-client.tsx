@@ -15,6 +15,7 @@ import { PurchaseDialog } from "@/components/purchase-dialog";
 import dynamic from "next/dynamic";
 import { getPropertyById } from "@/utils/property.http";
 import PropertyLoading from "@/app/marketplace/[id]/loading";
+import PropertyNotFound from "@/app/marketplace/[id]/not-found";
 
 const PropertyMap = dynamic(() => import("@/components/property-map"), {
   ssr: false,
@@ -33,14 +34,20 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
   const [property, setProperty] = useState<Property | null>(null);
   const [selectedLot, setSelectedLot] = useState<Lot | null>(null);
   const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false);
+  const [error, setError] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
   const fetchProperty = async () => {
-    const token = user?.token || "";
-    const data = await getPropertyById(propertyId as string, token);
-    setProperty(data);
+    try {
+      const token = user?.token || "";
+      const data = await getPropertyById(propertyId as string, token);
+      setProperty(data);
+    } catch (error) {
+      setError(true);
+    }
   };
+
   const handleLotSelect = (lot: Lot) => {
     if (!user) {
       toast({
@@ -64,9 +71,13 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
     fetchProperty();
   }, []);
 
+  if (error) {
+    return <PropertyNotFound />;
+  }
   if (!property) {
     return PropertyLoading();
   }
+
 
   return (
     <div className="container mx-auto px-4 py-8">
