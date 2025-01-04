@@ -35,7 +35,7 @@ The project follows a standard Next.js structure:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/your-user/invierte-app.git
+   git clone https://github.com/IvanSmir/Invierte.git
    ```
 
 2. Install dependencies:
