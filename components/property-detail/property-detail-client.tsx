@@ -91,7 +91,7 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
             <div className="absolute inset-0">
               <PropertyMap
                 center={[property.coordinates[0][0], property.coordinates[0][1]]}
-                zoom={25}
+                zoom={18}
                 property={property}
                 onLotSelect={handleLotSelect}
               />

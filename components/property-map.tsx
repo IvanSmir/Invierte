@@ -80,18 +80,12 @@ export default function PropertyMap({
       style={{ height: "100%", width: "100%" }}
     >
       <MapEventHandler onMapClick={onMapClick} />
-
-      <LayersControl position="bottomleft">
-        <BaseLayer name="Satélite">
-          <TileLayer
-            attribution='&copy; Google'
-            url="http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
-            maxZoom={50}
-            subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
-          />
-        </BaseLayer>
-      </LayersControl>
-
+      <TileLayer
+        attribution='&copy; Google'
+        url="http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+        maxZoom={25}
+        subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
+      />
       {/* Draw property lots if they exist */}
       {property?.lots?.map((lot) => (
         <Polygon
