@@ -6,6 +6,7 @@ import { Property } from "@/lib/types";
 import { Button } from "./ui/button";
 import { ArrowRight, MapPin } from "lucide-react";
 import { Card } from "./ui/card";
+import Image from "next/image";
 
 
 export default function FirstProperty() {
@@ -54,7 +55,7 @@ export default function FirstProperty() {
                     {data.map((i) => (
                         <Card key={i.id} className="overflow-hidden">
                             <div className="aspect-[4/3] relative">
-                                <img
+                                <Image
                                     src={i.images[0] ? i.images[0]?.url : 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&h=800&fit=crop'}
                                     alt={`Terreno destacado ${i}`}
                                     className="object-cover w-full h-full"
