@@ -9,12 +9,15 @@ export default function Home() {
 
   return (
     <>
-      <section className="relative  py-20 md:py-32 overflow-hidden h-96 ">
-        <div className="absolute  inset-0 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2532&q=80')] bg-cover bg-center">
-          <div className="absolute inset-0 bg-black/60" />
-        <div className="absolute inset-0 container  max-w-6xl mx-auto px-4">
+    <section
+      className="relative py-20 md:py-32 overflow-hidden h-[70vh] bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: "url('/images/homeBackground.jpeg')",
+      }}
+    >  
+      <div className="absolute inset-0 container  max-w-6xl mx-auto px-4">
           <div className="max-w-3xl">
-            <h1 className="py-5 text-4xl md:text-6xl font-bold text-white mb-6">
+            <h1 className="py-5 text-4xl md:text-6xl font-bold text-white mt-20 ">
               Encuentra el terreno perfecto para tu próximo proyecto
             </h1>
             <p className="text-xl text-white/80 mb-8">
@@ -28,14 +31,13 @@ export default function Home() {
             </Button>
           </div>
         </div>
-        </div>
       </section>
 
 
-      <section className="py-20 bg-muted/50">
+      <section className="py-20 bg-muted">
         <div className="container max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">¿Por qué elegir Invierte?</h2>
+            <h2 className="text-3xl font-bold mb-4 text-h2">¿Por qué elegir Invierte?</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Ofrecemos la mejor experiencia para encontrar y adquirir terrenos
             </p>
@@ -43,7 +45,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="p-6">
-              <Search className="h-12 w-12 mb-4 text-primary" />
+              <Search className="h-12 w-12 mb-4 text-icon" />
               <h3 className="text-xl font-semibold mb-2">Búsqueda Inteligente</h3>
               <p className="text-muted-foreground">
                 Encuentra el terreno ideal con nuestros filtros avanzados de búsqueda
@@ -51,7 +53,7 @@ export default function Home() {
             </Card>
 
             <Card className="p-6">
-              <Shield className="h-12 w-12 mb-4 text-primary" />
+              <Shield className="h-12 w-12 mb-4 text-icon" />
               <h3 className="text-xl font-semibold mb-2">Transacciones Seguras</h3>
               <p className="text-muted-foreground">
                 Garantizamos la seguridad en todas las transacciones realizadas
@@ -59,7 +61,7 @@ export default function Home() {
             </Card>
 
             <Card className="p-6">
-              <Award className="h-12 w-12 mb-4 text-primary" />
+              <Award className="h-12 w-12 mb-4 text-icon" />
               <h3 className="text-xl font-semibold mb-2">Terrenos Verificados</h3>
               <p className="text-muted-foreground">
                 Todos nuestros terrenos son verificados por expertos
@@ -75,7 +77,7 @@ export default function Home() {
       <FirstProperty />
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary text-primary-foreground">
+      <section className="py-20 bg-primary bg-section text-primary-foreground">
         <div className="container max-w-6xl mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             ¿Listo para encontrar tu terreno ideal?

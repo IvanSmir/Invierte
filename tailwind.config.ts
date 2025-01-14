@@ -20,6 +20,8 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        icon: "#068a3c",
+        section: "#174405",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

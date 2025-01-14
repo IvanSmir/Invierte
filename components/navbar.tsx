@@ -6,6 +6,7 @@ import { MapPinned, User, LogOut, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useAuth } from "@/contexts/auth-context";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,8 +14,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useTheme } from "next-themes";
 
 export function Navbar() {
+
+  const { theme } = useTheme(); 
   const { user, logout } = useAuth();
   const router = useRouter();
 
@@ -36,9 +40,11 @@ export function Navbar() {
       <div className="container max-w-6xl mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <MapPinned className="h-6 w-6" />
-            <span className="text-xl font-bold">Invierte</span>
-          </Link>
+          {theme === "dark" ? (
+              <img src="/images/logoDark.svg" alt="Invierte" width={150} height={50} />
+            ) : (
+              <img src="/images/logoLight.svg" alt="Invierte" width={150} height={50} />
+            )}          </Link>
 
           <nav className="hidden md:flex items-center space-x-6">
             <Link href="/marketplace" className="text-foreground/60 hover:text-foreground transition-colors">
