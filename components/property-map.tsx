@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { MapContainer, TileLayer, Polygon, Popup, useMapEvents, Marker } from "react-leaflet";
+import { MapContainer, TileLayer, Polygon, Popup, useMapEvents, Marker, LayersControl } from "react-leaflet";
+
 import { Icon } from "leaflet";
 import { Property, Lot } from "@/lib/types";
 import { formatCurrency } from "@/lib/utils";
@@ -29,6 +30,9 @@ const getStatusColor = (status: Lot['status']) => {
       return '#22c55e';
   }
 };
+
+const { BaseLayer } = LayersControl;
+
 
 const markerIcon = new Icon({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
@@ -76,12 +80,12 @@ export default function PropertyMap({
       style={{ height: "100%", width: "100%" }}
     >
       <MapEventHandler onMapClick={onMapClick} />
-
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; Google'
+        url="https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+        maxZoom={25}
+        subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
       />
-
       {/* Draw property lots if they exist */}
       {property?.lots?.map((lot) => (
         <Polygon
