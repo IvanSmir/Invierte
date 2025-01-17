@@ -1,3 +1,4 @@
+'use client';
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -6,20 +7,21 @@ import { AuthProvider } from "@/contexts/auth-context";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { Toaster } from "@/components/ui/toaster";
+import { usePathname } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "Invierte | Marketplace de terrenos",
-  description: "Encuentra el terreno perfecto para tu próximo proyecto",
-  metadataBase: new URL('https://invierte.vercel.app/'),
-};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+
+  // Verificar si es la ruta de autenticación
+  const isAuthPage = pathname === "/auth";
+
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={inter.className}>
@@ -31,11 +33,11 @@ export default function RootLayout({
         >
           <AuthProvider>
             <div className="relative min-h-screen flex flex-col">
-              <Navbar />
+              {!isAuthPage && <Navbar />} {/* Ocultar Navbar si estamos en /auth */}
               <main className="flex-grow">
                 {children}
               </main>
-              <Footer />
+              {!isAuthPage && <Footer />} {/* Ocultar Footer si estamos en /auth */}
             </div>
             <Toaster />
           </AuthProvider>

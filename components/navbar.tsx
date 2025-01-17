@@ -39,8 +39,9 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex max-w-6xl mx-auto px-4">
+      <div className="container max-w-6xl mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
+          {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             {theme === "dark" ? (
               <img
@@ -59,11 +60,54 @@ export function Navbar() {
             )}
           </Link>
 
-       
+          {/* Botones visibles solo en pantallas pequeñas */}
+          <div className="flex md:hidden items-center space-x-2">
+            <Button
+              onClick={handleSellClick}
+              variant="outline"
+              className="flex items-center"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Vender
+            </Button>
+            {user ? (
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                className="flex items-center"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Salir
+              </Button>
+            ) : (
+              <Button asChild variant="outline" className="flex items-center">
+                <Link href="/auth">Ingresar</Link>
+              </Button>
+            )}
+          </div>
 
-    
+          {/* Botón de menú para pantallas pequeñas */}
+          <button
+            className="block md:hidden p-2 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16m-7 6h7"
+              />
+            </svg>
+          </button>
 
-          {/*  pantallas grandes */}
+          {/* Navegación visible solo en pantallas grandes */}
           <nav className="hidden md:flex items-center space-x-6">
             <Link
               href="/marketplace"
@@ -85,15 +129,15 @@ export function Navbar() {
             </Link>
           </nav>
 
-          {/* pantallas grandes */}
-          <div className="flex items-center space-x-4">
+          {/* Botones adicionales visibles en pantallas grandes */}
+          <div className="hidden md:flex items-center space-x-4">
             <Button
               onClick={handleSellClick}
               variant="outline"
               className="flex items-center"
             >
               <Plus className="h-4 w-4 mr-2" />
-              Vender
+              Vender Terreno
             </Button>
             <ModeToggle />
             {user ? (
@@ -129,30 +173,10 @@ export function Navbar() {
                 <Link href="/auth">Iniciar Sesión</Link>
               </Button>
             )}
-              {/* pantallas pequeñas */}
-      <button
-            className=" md:hidden p-2 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16m-7 6h7"
-              />
-            </svg>
-          </button>
           </div>
         </div>
       </div>
-    
+
       {/* Sidebar */}
       {isSidebarOpen && (
         <div className="bg-white dark:bg-gray-900 w-full p-4">
