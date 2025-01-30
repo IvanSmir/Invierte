@@ -53,12 +53,12 @@ export default function AboutPage() {
                     </div>
                 </div>
             </section>
-
             <section className="bg-[hsl(var(--secondary))] py-16">
                 <div className="container mx-auto px-4">
                     <h2 className="text-3xl font-bold text-center mb-12">Nuestro Equipo</h2>
-                    <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                        <div className="bg-[hsl(var(--card))] p-6 rounded-lg shadow-md text-center border border-[hsl(var(--border))]">
+                    <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    
+                        <div className="bg-[hsl(var(--card))] p-6 rounded-lg shadow-md text-center border border-[hsl(var(--border))] transform translate-y-[-2vh]">
                             <div className="relative w-48 h-48 mx-auto mb-4 rounded-full overflow-hidden">
                                 <Image
                                     src="/team/tobias.jpg"
@@ -70,6 +70,20 @@ export default function AboutPage() {
                             <h3 className="text-xl font-bold mb-2">Tobias Ojeda</h3>
                             <p className="text-[hsl(var(--muted-foreground))] font-semibold mb-4">CEO-Fundador</p>
                             <p className="text-sm text-[hsl(var(--foreground))]">Emprendedor dueño de Hogapy E.A.S, Técnico en administración de Negocios especializado en empresas de base tecnológica. Especialista en User Experience and Customer Support. Publicista con especialidad en MKT Inmobiliario.</p>
+                        </div>
+
+                        <div className="bg-[hsl(var(--card))] p-6 rounded-lg shadow-md text-center border border-[hsl(var(--border))]">
+                            <div className="relative w-48 h-48 mx-auto mb-4 rounded-full overflow-hidden">
+                                <Image
+                                    src="/team/maria.jpeg"
+                                    alt="Maria Esquivel"
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2">Maria Esquivel</h3>
+                            <p className="text-[hsl(var(--muted-foreground))] font-semibold mb-4">Programadora</p>
+                            <p className="text-sm text-[hsl(var(--foreground))]">Desarrolladora Web FullStack, estudiante del 4to año de Ing. Informática en la UNI, con experiencia en el diseño e implementacion de aplicaciones web. Integrante del equipo ganador de la hackathon de PPY.</p>
                         </div>
 
                     </div>
