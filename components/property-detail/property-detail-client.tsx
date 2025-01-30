@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/components/ui/use-toast";
@@ -38,6 +38,7 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
   const { user } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
+  const lotInfoRef = useRef<HTMLDivElement>(null);
   const fetchProperty = async () => {
     try {
       const token = user?.token || "";
@@ -62,7 +63,9 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
 
     if (lot.status === "available") {
       setSelectedLot(lot);
+      lotInfoRef.current?.scrollIntoView({ behavior: "smooth" });
     }
+
   };
   const handleReservationComplete = () => {
     fetchProperty(); // Recargar los datos de la propiedad
@@ -109,7 +112,7 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
         </div>
 
         {/* Barra Lateral */}
-        <div className="space-y-6">
+        <div className="space-y-6" ref={lotInfoRef}>
           <div className="sticky top-4">
             <PropertyInfo property={property} />
             <div className="mt-4">
