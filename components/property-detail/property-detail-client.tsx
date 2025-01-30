@@ -63,16 +63,27 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
 
     if (lot.status === "available") {
       setSelectedLot(lot);
-      lotInfoRef.current?.scrollIntoView({ behavior: "smooth" });
     }
 
   };
   const handleReservationComplete = () => {
     fetchProperty(); // Recargar los datos de la propiedad
   };
+
+
+  const handleScroll = () => {
+    const lotInfo = lotInfoRef.current;
+    if (!lotInfo) {
+      return;
+    }
+    lotInfo.scrollIntoView({ behavior: "smooth" });
+
+
+  };
   useEffect(() => {
     fetchProperty();
   }, [fetchProperty]);
+
 
   if (error) {
     return <PropertyNotFound />;
@@ -97,6 +108,7 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
                 zoom={18}
                 property={property}
                 onLotSelect={handleLotSelect}
+                onScroll={handleScroll}
               />
             </div>
           </div>

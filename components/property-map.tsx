@@ -16,6 +16,7 @@ interface PropertyMapProps {
   onLotSelect?: (lot: Lot) => void;
   onMapClick?: (coord: [number, number]) => void;
   coordinates?: [number, number][];
+  onScroll?: () => void;
 }
 
 const getStatusColor = (status: Lot['status']) => {
@@ -63,7 +64,8 @@ export default function PropertyMap({
   property,
   onLotSelect,
   onMapClick,
-  coordinates
+  coordinates,
+  onScroll
 }: PropertyMapProps) {
   useEffect(() => {
     delete (Icon.Default.prototype as any)._getIconUrl;
@@ -107,7 +109,7 @@ export default function PropertyMap({
                 <p>Área: {lot.area}m²</p>
 
                 <p>Precio: {formatCurrency(lot.price)}</p>
-                <p className="capitalize">Estado: {lot.status}</p>
+                <p className="capitalize">Estado: {lot.status === "available" ? "Disponible" : "Reservado"}</p>
               </div>
               {lot.status === 'available' && onLotSelect && (
                 <Button
@@ -116,6 +118,7 @@ export default function PropertyMap({
                   onClick={(e) => {
                     e.stopPropagation();
                     onLotSelect(lot);
+                    onScroll?.();
                   }}
                 >
                   Seleccionar Lote
