@@ -54,11 +54,11 @@ export default function AboutPage() {
                 </div>
             </section>
             <section className="bg-[hsl(var(--secondary))] py-16">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto px-4 max-w-screen-lg">
                     <h2 className="text-3xl font-bold text-center mb-12">Nuestro Equipo</h2>
-                    <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                    
-                        <div className="bg-[hsl(var(--card))] p-6 rounded-lg shadow-md text-center border border-[hsl(var(--border))] transform translate-y-[-2vh]">
+                    <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+                        <div className="bg-[hsl(var(--card))] p-6 rounded-lg shadow-md text-center border border-[hsl(var(--border))] transform ">
                             <div className="relative w-48 h-48 mx-auto mb-4 rounded-full overflow-hidden">
                                 <Image
                                     src="/team/tobias.jpg"
@@ -84,6 +84,33 @@ export default function AboutPage() {
                             <h3 className="text-xl font-bold mb-2">Maria Esquivel</h3>
                             <p className="text-[hsl(var(--muted-foreground))] font-semibold mb-4">Programadora</p>
                             <p className="text-sm text-[hsl(var(--foreground))]">Desarrolladora Web FullStack, estudiante del 4to año de Ing. Informática en la UNI, con experiencia en el diseño e implementacion de aplicaciones web. Integrante del equipo ganador de la hackathon de PPY.</p>
+                        </div>
+                        <div className="bg-[hsl(var(--card))] p-6 rounded-lg shadow-md text-center border border-[hsl(var(--border))] transform ">
+                            <div className="relative w-48 h-48 mx-auto mb-4 rounded-full overflow-hidden">
+                                <Image
+                                    src="/team/andrea.jpg"
+                                    alt="Tobias Ojeda"
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2">Andrea Ríos</h3>
+                            <p className="text-[hsl(var(--muted-foreground))] font-semibold mb-4">Proyectista</p>
+                            <p className="text-sm text-[hsl(var(--foreground))]">Consultora de proyectos inmobiliarios, Proyectista para loteadoras privadas, experiencia en el sector público, parte de equipo de Plan de Ordenamiento Territorial C.O</p>
+                        </div>
+
+                        <div className="bg-[hsl(var(--card))] p-6 rounded-lg shadow-md text-center border border-[hsl(var(--border))] transform">
+                            <div className="relative w-48 h-48 mx-auto mb-4 rounded-full overflow-hidden">
+                                <Image
+                                    src="/team/jose.jpg"
+                                    alt="Tobias Ojeda"
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2">Jose Ferreira</h3>
+                            <p className="text-[hsl(var(--muted-foreground))] font-semibold mb-4">Programador</p>
+                            <p className="text-sm text-[hsl(var(--foreground))]">Desarrollador Web FullStack, estudiante del 4to año de Ing. Informática en la UNI, con experiencia en el desarrollo e implementacion de aplicaciones web. Integrante del equipo ganador de la hackathon de PPY.</p>
                         </div>
 
                     </div>
