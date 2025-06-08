@@ -82,7 +82,7 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
   };
   useEffect(() => {
     fetchProperty();
-  }, [fetchProperty]);
+  }, []);
 
 
   if (error) {
