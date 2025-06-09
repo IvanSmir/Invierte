@@ -307,7 +307,7 @@ export function LotsInfo({ location, data, onUpdate, errors = {} }: LotsInfoProp
 
 
             <div className="space-y-2">
-              <Label htmlFor="pricePerLot">Precio por lote en USD</Label>
+              <Label htmlFor="pricePerLot">Precio por lote en GS</Label>
               <Input
                 type="number"
                 id="pricePerLot"
