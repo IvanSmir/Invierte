@@ -5,6 +5,7 @@ import { Lot } from "@/lib/types";
 import Image from "next/image";
 import { FileIcon, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { formatCurrency } from "@/lib/utils";
 
 interface SummaryData {
   basicInfo: {
@@ -190,7 +191,7 @@ export function Summary({ data }: SummaryProps) {
               <div>
                 <dt className="font-medium">Valor Total</dt>
                 <dd className="text-muted-foreground mt-1">
-                  ${data.lotsInfo.lots.reduce((sum, lot) => sum + lot.price, 0).toLocaleString()}
+                    {formatCurrency(data.lotsInfo.lots.reduce((sum, lot) => sum + lot.price, 0))}
                 </dd>
               </div>
             </div>
@@ -209,7 +210,7 @@ export function Summary({ data }: SummaryProps) {
                       </div>
                       <div className="text-right">
                         <span className="text-sm font-medium">
-                          ${lot.price.toLocaleString()}
+                         {formatCurrency(lot.price)}
                         </span>
                         <p className="text-sm text-muted-foreground">
                           Estado: {lot.status}
