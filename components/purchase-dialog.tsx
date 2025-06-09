@@ -80,7 +80,7 @@ export function PurchaseDialog({ property, lot, open, onOpenChange, onReservatio
       `Hola, soy ${formValues.name} (${formValues.email}).\nQuiero confirmar la reserva del lote ${lot.number} de la propiedad "${property.name}" por un valor de ${formatCurrency(lot.price)}.`
     );
 
-    const phoneNumber = "595985408695"; // Reemplaza con el número de WhatsApp del vendedor (sin "+" y sin espacios)
+    const phoneNumber = "595985408695"; 
 
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
     window.open(whatsappUrl, "_blank");
