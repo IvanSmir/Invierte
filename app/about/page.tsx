@@ -63,6 +63,7 @@ export default function AboutPage() {
                                 <Image
                                     src="/team/tobias.jpg"
                                     alt="Tobias Ojeda"
+                                    
                                     fill
                                     className="object-cover"
                                 />

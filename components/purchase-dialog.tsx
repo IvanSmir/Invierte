@@ -75,7 +75,16 @@ export function PurchaseDialog({ property, lot, open, onOpenChange, onReservatio
         description: "La reserva se ha realizado correctamente.",
         duration: 3000,
       });
+    const formValues = form.getValues();
+    const message = encodeURIComponent(
+      `Hola, soy ${formValues.name} (${formValues.email}).\nQuiero confirmar la reserva del lote ${lot.number} de la propiedad "${property.name}" por un valor de ${formatCurrency(lot.price)}.`
+    );
 
+    
+
+    const whatsappNumber = process.env.NEXT_PUBLIC_PHONE_NUMBER;
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+    window.open(whatsappUrl, "_blank");
     } catch (error) {
       console.error("Error al procesar la reserva:", error);
     } finally {
