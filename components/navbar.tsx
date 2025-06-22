@@ -161,7 +161,7 @@ export function Navbar() {
                     <span>{user.fullName}</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="flex items-center"
-                    onClick={() => router.push("/administration")}
+                    onClick={() => router.push("/administration/reservation")}
                   >
                     <ShieldUserIcon className="mr-2 h-4 w-4"/>
 
