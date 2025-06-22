@@ -1,5 +1,5 @@
 "use client";
-
+import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
@@ -39,6 +39,9 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
   const { toast } = useToast();
   const router = useRouter();
   const lotInfoRef = useRef<HTMLDivElement>(null);
+  const searchParams = useSearchParams();
+  const preselectedLotId = searchParams.get("lot");
+  console.log("Preselected Lot ID:", preselectedLotId);
   const fetchProperty = async () => {
     try {
       const token = user?.token || "";
@@ -82,8 +85,16 @@ export function PropertyDetailClient({ propertyId }: PropertyDetailClientProps) 
   };
   useEffect(() => {
     fetchProperty();
-  }, []);
 
+  }, []);
+  useEffect(() => {
+    if (property && preselectedLotId) {
+      const lot = property.lots.find((l) => l.id === preselectedLotId);
+      if (lot) {
+        setSelectedLot(lot);
+      }
+    }
+  }, [property, preselectedLotId]);
 
   if (error) {
     return <PropertyNotFound />;

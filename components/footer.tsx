@@ -1,9 +1,13 @@
 "use client";
 
+import { useAuth } from "@/contexts/auth-context";
+import { RolesEnum } from "@/lib/types/auth";
 import { MapPinned } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export function Footer() {
+
   return (
     <footer className="w-full border-t bg-background">
       <div className="container max-w-6xl mx-auto px-4 py-12 md:py-16 lg:py-20">

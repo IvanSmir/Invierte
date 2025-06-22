@@ -4,6 +4,10 @@ export interface User {
   email: string;
 }
 
+export enum RolesEnum {
+  USER = "user",
+  ADMIN = "admin",
+}
 export interface LoginCredentials {
   email: string;
   password: string;

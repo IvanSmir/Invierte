@@ -58,6 +58,7 @@ export default function FirstProperty() {
                                 <Image
                                     src={i.images[0] ? i.images[0]?.url : 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&h=800&fit=crop'}
                                     alt={`Terreno destacado ${i}`}
+                                    fill
                                     className="object-cover w-full h-full"
                                 />
                             </div>
