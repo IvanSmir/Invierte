@@ -21,7 +21,8 @@ export default function RootLayout({
 
   // Verificar si es la ruta de autenticación
   const isAuthPage = pathname === "/auth";
-
+  const isAdministration = pathname === "/administration/*";
+  const isFooter = !isAuthPage && !isAdministration;
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={inter.className}>
@@ -37,7 +38,7 @@ export default function RootLayout({
               <main className="flex-grow">
                 {children}
               </main>
-              {!isAuthPage && <Footer />} {/* Ocultar Footer si estamos en /auth */}
+              {!isFooter && <Footer />} {/* Ocultar Footer si estamos en /auth */}
             </div>
             <Toaster />
           </AuthProvider>

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus, User, LogOut } from "lucide-react";
+import { Plus, User, LogOut, Shield, ShieldUserIcon, ShieldUser, User2 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useAuth } from "@/contexts/auth-context";
@@ -156,8 +157,15 @@ export function Navbar() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem className="flex items-center">
-                    <User className="mr-2 h-4 w-4" />
+                    <User2 className="mr-2 h-4 w-4" />
                     <span>{user.fullName}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="flex items-center"
+                    onClick={() => router.push("/administration/reservation")}
+                  >
+                    <ShieldUserIcon className="mr-2 h-4 w-4"/>
+
+                    <span>Administración</span>   
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-destructive focus:text-destructive"

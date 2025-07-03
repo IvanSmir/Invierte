@@ -6,7 +6,7 @@ export const getReservation = async ( token: string) => {
       const response = await fetch(`${API_URL}`, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`,
+        Authorization: token ? `Bearer ${token}` : "Bearer ",
           "Content-Type": "application/json",
         },
       });

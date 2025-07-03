@@ -2,12 +2,15 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { loginHttp, registerHttp } from "@/utils/auth.http";
+import { RolesEnum } from "@/lib/types/auth";
+
 
 interface User {
   id: string;
   fullName: string;
   email: string;
   token: string;
+  roles: RolesEnum[];
 }
 
 interface AuthContextType {
