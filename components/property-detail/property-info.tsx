@@ -30,8 +30,8 @@ export function PropertyInfo({ property }: PropertyInfoProps) {
             <Badge variant="secondary">{property.type}</Badge>
           </div>
           <div>
-            <h3 className="font-semibold mb-2">Precio Base</h3>
-            <p className="text-2xl font-bold text-primary">{formatCurrency(property.price)}</p>
+            <h3 className="font-semibold mb-2">Cuotas desde </h3>
+            <p className="text-2xl font-bold text-primary">{formatCurrency(property?.lots[0]?.price)}</p>
           </div>
           <div>
             <h3 className="font-semibold mb-2">Descripción</h3>

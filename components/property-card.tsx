@@ -32,7 +32,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
           <span>{property.location}</span>
         </div>
         <h3 className="text-xl font-semibold mb-2">{property.name}</h3>
-        <p className="text-2xl font-bold text-primary">{formatCurrency(property.price)}</p>
+        <p className="text-2xl font-bold text-primary"><span className="font-semibold">Cuotas desde </span>{formatCurrency(property?.lots[0]?.price)}</p>
         <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center">
             <Ruler className="h-4 w-4 mr-1" />
