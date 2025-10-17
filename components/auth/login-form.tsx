@@ -1,3 +1,4 @@
+// components/auth/login-form.tsx
 "use client";
 
 import { useState } from "react";
@@ -36,13 +37,18 @@ export function LoginForm() {
   const onSubmit = async (data: LoginValues) => {
     try {
       setIsLoading(true);
-      await login(data.email, data.password);
-      toast({
-        title: "¡Bienvenido!",
-        description: "Has iniciado sesión correctamente",
-        duration: 3000,
-      });
-      router.push("/marketplace");
+      const showWelcome = await login(data.email, data.password);
+      if (showWelcome) {
+        router.push("/auth/welcome");
+      }
+      else {
+        toast({
+          title: "¡Bienvenido!",
+          description: "Has iniciado sesión correctamente",
+          duration: 3000,
+        });
+        router.push("/marketplace");
+      }
     } catch (error: any) {
       if (error?.message == "Credenciales inválidas") {
         setError("Credenciales inválidas");

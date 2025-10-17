@@ -1,3 +1,4 @@
+// contexts/auth-context.tsx
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
@@ -11,11 +12,12 @@ interface User {
   email: string;
   token: string;
   roles: RolesEnum[];
+  firstTime: boolean;
 }
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<boolean>;
   register: (fullName: string, email: string, password: string, confirmPassword: string) => Promise<void>;
   logout: () => void;
 }
@@ -39,11 +41,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     try {
       const response = await loginHttp({ user: { email, password } });
-      const { user, token } = response;
+      const { user, token, showWelcome  } = response;
       setUser({ ...user, token });
       if (typeof window !== "undefined") {
         window.localStorage.setItem("user", JSON.stringify({ ...user, token }));
       }
+       return !!showWelcome;
     } catch (error: any) {
       console.error("Error al iniciar sesión:", error);
       if (error?.message == "Credenciales inválidas") {

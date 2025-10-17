@@ -48,7 +48,8 @@ export function RegisterForm() {
         description: "Tu cuenta ha sido creada correctamente",
         duration: 3000,
       });
-      router.push("/marketplace");
+
+      router.push("/auth/welcome");
     } catch (error) {
       toast({
         title: "Error",
